@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
+import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
