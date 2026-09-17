@@ -270,21 +270,21 @@ export default function Header() {
             </nav>
 
             <Link
-              href="/settings"
+              href="/help"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2  text-gray-600 dark:text-gray-300 mt-3"
             >
               Help Center
             </Link>
             <Link
-              href="/settings"
+              href="/return-refunds"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2  text-gray-600 dark:text-gray-300 mt-3"
             >
               Return & refund Policy
             </Link>
             <Link
-              href="/settings"
+              href="/disputes"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2  text-gray-600 dark:text-gray-300 mt-3"
             >
