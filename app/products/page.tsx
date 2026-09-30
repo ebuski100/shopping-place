@@ -80,15 +80,13 @@ export default async function ProductsPage({
   ].sort();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 ">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-15 pl-45 lg:pl-65 sm:pl-57">
       <Header />
 
       <div className="flex min-h-[calc(100vh-80px)]">
-        {/* ================================================== */}
         {/* CATEGORY SIDEBAR */}
-        {/* ================================================== */}
 
-        <aside className="sticky top-0 h-[calc(100vh-80px)] w-40 shrink-0 overflow-y-auto border-r bg-white dark:bg-gray-900 sm:w-52 lg:w-60">
+        <aside className="fixed top-16 left-0 bottom-16 w-40    overflow-y-auto  bg-white dark:bg-gray-900 sm:w-52 lg:w-60 z-40 pb-5">
           <div className="p-3 sm:p-5">
             <h2 className="mb-4 text-sm font-bold  tracking-wide text-gray-900 dark:text-white sm:text-base">
               Categories

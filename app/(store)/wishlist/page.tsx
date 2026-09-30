@@ -169,7 +169,7 @@ export default function WishlistPage() {
           </p>
 
           <Link
-            href="/shop"
+            href="/"
             className="mt-7 inline-flex items-center gap-2 rounded-full bg-black px-7 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 active:scale-95"
           >
             Start Shopping
@@ -320,6 +320,7 @@ export default function WishlistPage() {
       <MoreToLove
         products={recommendedProducts}
         excludeWishlisted={true}
+        title="More To Love"
       />{" "}
     </main>
   );

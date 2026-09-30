@@ -37,11 +37,11 @@ const faqs = [
 
 export default function HelpPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+    <div className="flex min-h-screen flex-col  text-gray-900 dark:bg-gray-950 dark:text-white bg-gray-50">
       <Header />
 
       <main className="flex-1">
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 mb-15">
           {/* Header */}
           <div className="mb-12 text-center">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -97,7 +97,7 @@ export default function HelpPage() {
               {faqs.map((faq) => (
                 <details
                   key={faq.question}
-                  className="group rounded-xl border bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
+                  className="group rounded-xl border border-gray-400 shadow-sm bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
                 >
                   <summary className="cursor-pointer list-none font-medium">
                     <div className="flex items-center justify-between gap-4">

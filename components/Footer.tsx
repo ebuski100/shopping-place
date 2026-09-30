@@ -56,7 +56,7 @@ const Footer = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 z-50 w-full bg-white dark:bg-gray-900 shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
+    <nav className="fixed lg:hidden bottom-0 left-0 z-50 w-full bg-white dark:bg-gray-900 shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
       <div className="flex flex-row justify-between p-4">
         {footerItems.map((item) => {
           const isActive = pathname === item.href;

@@ -7,9 +7,22 @@ import AddToCartIcon from "@/components/AddToCartIcon";
 
 type ProductCardProps = {
   product: Product;
+
+  showCategory?: boolean;
+  showDescription?: boolean;
+  showStock?: boolean;
+  showWishlist?: boolean;
+  showAddToCart?: boolean;
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  showCategory = true,
+  showDescription = true,
+  showStock = true,
+  showWishlist = true,
+  showAddToCart = true,
+}: ProductCardProps) {
   return (
     <article className="group overflow-hidden rounded-xl bg-white dark:bg-gray-900 shadow-sm transition-shadow duration-200 hover:shadow-md">
       {/* Product image */}
@@ -23,13 +36,17 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         {/* Wishlist */}
-        <div className="absolute right-3 top-3">
-          <WishlistButton productId={product.id} />
-        </div>
+        {showWishlist && (
+          <div className="absolute right-3 top-3">
+            <WishlistButton productId={product.id} />
+          </div>
+        )}
 
-        <div className="absolute bottom-3 right-3">
-          <AddToCartIcon product={product} />
-        </div>
+        {showAddToCart && (
+          <div className="absolute bottom-3 right-3">
+            <AddToCartIcon product={product} />
+          </div>
+        )}
 
         {/* Out of stock */}
         {product.stock <= 0 && (
@@ -43,9 +60,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Product information */}
       <div className="p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          {product.category}
-        </p>
+        {showCategory && (
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            {product.category}
+          </p>
+        )}
 
         <Link href={`/products/${product.id}`}>
           <h2 className="mt-1 line-clamp-1 text-base font-semibold text-gray-900 dark:text-white transition-colors hover:text-gray-600 dark:text-gray-300 sm:text-lg">
@@ -53,9 +72,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h2>
         </Link>
 
-        <p className="mt-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
-          {product.description}
-        </p>
+        {showDescription && (
+          <p className="mt-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+            {product.description}
+          </p>
+        )}
 
         {/* Price */}
         <p className="mt-4 text-lg font-bold text-gray-900 dark:text-white">
@@ -63,11 +84,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         </p>
 
         {/* Stock */}
-        <p className="mt-1 text-green-400 text-xs ">
-          {product.stock > 0
-            ? `${product.stock} available`
-            : "Currently unavailable"}
-        </p>
+
+        {showStock && (
+          <p
+            className={`mt-1 text-green-400 text-xs ${product.stock > 0 ? "" : "text-red-400"} `}
+          >
+            {product.stock > 0
+              ? `${product.stock} available`
+              : "Currently unavailable"}
+          </p>
+        )}
       </div>
     </article>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import GoBack from "@/components/GoBack";
 
 type Notification = {
   id: number;
@@ -182,28 +183,30 @@ export default function NotificationsClient() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
+      <div>
+        <GoBack />
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Notifications
+            </h1>
 
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Notifications
-          </h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Stay updated about your orders and account.
+            </p>
+          </div>
 
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Stay updated about your orders and account.
-          </p>
+          {unreadCount > 0 && (
+            <button
+              type="button"
+              onClick={markAllAsRead}
+              disabled={markingAll}
+              className="self-start rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800 sm:self-auto"
+            >
+              {markingAll ? "Marking as read..." : "Mark all as read"}
+            </button>
+          )}
         </div>
-
-        {unreadCount > 0 && (
-          <button
-            type="button"
-            onClick={markAllAsRead}
-            disabled={markingAll}
-            className="self-start rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800 sm:self-auto"
-          >
-            {markingAll ? "Marking as read..." : "Mark all as read"}
-          </button>
-        )}
       </div>
 
       {/* Empty state */}

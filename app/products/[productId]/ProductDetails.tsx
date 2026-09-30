@@ -40,24 +40,14 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
   const isInStock = product.stock > 0;
 
   return (
-    <>
-      <ProductDetailHeader />
+    <div className="pt-15">
+      <ProductDetailHeader product={product} />
 
       <main className="mx-auto w-full max-w-7xl px-4 py-8 pb-24 sm:px-6 lg:px-8">
-        {/* Breadcrumb-style header */}
-        <div className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          {product.category} /{" "}
-          <span className="font-medium text-gray-900 dark:text-white">{product.name}</span>
-        </div>
-
         {/* Main product section */}
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-          {/* ====================================== */}
-          {/* Product Image */}
-          {/* ====================================== */}
-
           <div className="relative">
-            <div className="overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800">
+            <div className="overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800 border border-gray-300">
               <img
                 src={product.image}
                 alt={product.name}
@@ -93,7 +83,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             <div className="mt-4 flex items-center gap-3">
               <Stars rating={rating} />
 
-              <span className="font-semibold text-gray-900 dark:text-white">{rating}</span>
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {rating}
+              </span>
 
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 ({reviewCount} reviews)
@@ -175,7 +167,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 <div>
                   <p className="text-sm font-medium">Save for later</p>
 
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Add to your wishlist</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Add to your wishlist
+                  </p>
                 </div>
               </div>
             </div>
@@ -206,8 +200,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         {/* Reviews */}
         {/* ====================================== */}
 
-        <Reviews />
+        <Reviews productId={product.id} />
       </main>
-    </>
+    </div>
   );
 }

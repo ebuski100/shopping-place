@@ -37,10 +37,6 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
         cache: "no-store",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to load wishlist");
-      }
-
       const data = await response.json();
 
       set({
@@ -53,10 +49,6 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       set({ loading: false });
     }
   },
-
-  // ------------------------------------------
-  // Add item
-  // ------------------------------------------
 
   addItem: async (productId) => {
     const response = await fetch("/api/wishlist", {
@@ -82,10 +74,6 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
         : [...state.items, data],
     }));
   },
-
-  // ------------------------------------------
-  // Remove item
-  // ------------------------------------------
 
   removeItem: async (productId) => {
     const response = await fetch(`/api/wishlist/${productId}`, {

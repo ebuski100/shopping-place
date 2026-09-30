@@ -2,7 +2,6 @@ import type { Product } from "@/types/product";
 
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import Categories from "@/components/Categories";
 
 import PromoCarousel from "@/components/PromoCarousel";
 import TodaysDeals from "@/components/TodaysDeals";
@@ -25,15 +24,18 @@ export default async function HomePage() {
   const categories = [...new Set(products.map((product) => product.category))];
 
   return (
-    <main className="py-8  pb-30  ">
+    <main className="py-8  pb-30  pt-20">
       <Header />
-      <Categories categories={categories} />
 
       <PromoCarousel />
 
       <TodaysDeals products={products} />
 
-      <MoreToLove products={products} excludeWishlisted={false} />
+      <MoreToLove
+        products={products}
+        excludeWishlisted={false}
+        title="Recommended for you"
+      />
       <Footer />
     </main>
   );

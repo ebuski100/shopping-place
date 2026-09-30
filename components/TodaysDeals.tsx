@@ -14,45 +14,69 @@ type TodaysDealsProps = {
 const DEAL_DURATION = 24 * 60 * 60 * 1000;
 
 export default function TodaysDeals({ products }: TodaysDealsProps) {
-  /*
-   * Temporary deal data.
-   *
-   * Later these values can come from the database:
-   * - discountPercentage
-   * - dealEndsAt
-   * - isDeal
-   */
-
   const deals = useMemo(() => {
-    return products.slice(0, 8).map((product, index) => {
-      const discount = [10, 15, 20, 25, 30, 15, 20, 10][index] ?? 10;
+    return products
+      .filter((product) => product.stock > 0)
+      .slice(0, 8)
+      .map((product, index) => {
+        const discount = [10, 15, 20, 25, 30, 15, 20, 10][index] ?? 10;
 
-      const originalPrice = Math.round(product.price / (1 - discount / 100));
+        const originalPrice = Math.round(product.price / (1 - discount / 100));
 
-      return {
-        ...product,
-        discount,
-        originalPrice,
-      };
-    });
+        return {
+          ...product,
+          discount,
+          originalPrice,
+        };
+      });
   }, [products]);
 
-  /*
-   * Countdown
-   */
+  const [dealEndsAt, setDealEndsAt] = useState<number | null>(null);
 
-  const [timeLeft, setTimeLeft] = useState(DEAL_DURATION);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((current) => {
-        if (current <= 1000) {
-          return DEAL_DURATION;
-        }
+    const STORAGE_KEY = "todays-deals-end-time";
 
-        return current - 1000;
-      });
-    }, 1000);
+    const storedEndTime = localStorage.getItem(STORAGE_KEY);
+
+    let endTime: number;
+
+    if (storedEndTime) {
+      endTime = Number(storedEndTime);
+
+      // If the old countdown has expired, create a new 24-hour deal.
+      if (endTime <= Date.now()) {
+        endTime = Date.now() + DEAL_DURATION;
+        localStorage.setItem(STORAGE_KEY, String(endTime));
+      }
+    } else {
+      // First visit: create the 24-hour countdown.
+      endTime = Date.now() + DEAL_DURATION;
+      localStorage.setItem(STORAGE_KEY, String(endTime));
+    }
+
+    setDealEndsAt(endTime);
+
+    const updateCountdown = () => {
+      const remaining = Math.max(0, endTime - Date.now());
+
+      setTimeLeft(remaining);
+
+      // Start a new deal when the current one expires.
+      if (remaining <= 0) {
+        const newEndTime = Date.now() + DEAL_DURATION;
+
+        localStorage.setItem(STORAGE_KEY, String(newEndTime));
+
+        setDealEndsAt(newEndTime);
+        setTimeLeft(DEAL_DURATION);
+      }
+    };
+
+    updateCountdown();
+
+    const timer = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -85,17 +109,6 @@ export default function TodaysDeals({ products }: TodaysDealsProps) {
     setCanScrollLeft(!atStart);
     setCanScrollRight(!atEnd);
   }
-
-  //   function scrollCarousel(direction: "left" | "right") {
-  //     if (!carouselRef.current) return;
-
-  //     const scrollAmount = 260;
-
-  //     carouselRef.current.scrollBy({
-  //       left: direction === "right" ? scrollAmount : -scrollAmount,
-  //       behavior: "smooth",
-  //     });
-  //   }
 
   function scrollCarousel(direction: "left" | "right") {
     if (!carouselRef.current) return;
@@ -158,11 +171,15 @@ export default function TodaysDeals({ products }: TodaysDealsProps) {
             <div className="flex items-center gap-1">
               <TimeBox value={hours} />
 
-              <span className="font-bold text-gray-400 dark:text-gray-500">:</span>
+              <span className="font-bold text-gray-400 dark:text-gray-500">
+                :
+              </span>
 
               <TimeBox value={minutes} />
 
-              <span className="font-bold text-gray-400 dark:text-gray-500">:</span>
+              <span className="font-bold text-gray-400 dark:text-gray-500">
+                :
+              </span>
 
               <TimeBox value={seconds} />
             </div>

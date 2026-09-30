@@ -54,8 +54,8 @@ export default async function CartPage() {
   });
 
   return (
-    <main className="min-h-screen  bg-gray-50 dark:bg-gray-950 pb-24">
-      <header className=" sticky bg-white dark:bg-gray-900 top-0 left-0 shadow-sm border-b border-gray-200 dark:border-gray-800 z-99 mb-5">
+    <main className="min-h-screen  bg-gray-50 dark:bg-gray-950 pb-24 pt-20">
+      <header className=" fixed right-0 bg-white dark:bg-gray-900 top-0 left-0 shadow-sm border-b border-gray-200 dark:border-gray-800 z-99 mb-5">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <Link
             href="/"
@@ -71,7 +71,10 @@ export default async function CartPage() {
                 <h1 className="text-xl font-bold text-green-700 sm:text-2xl mr-[3px]">
                   Your Cart
                 </h1>
-                <ShoppingBag size={20} className="text-gray-700 dark:text-gray-200" />
+                <ShoppingBag
+                  size={20}
+                  className="text-gray-700 dark:text-gray-200"
+                />
               </div>
 
               <p className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
@@ -86,7 +89,11 @@ export default async function CartPage() {
         <CartClient initialCart={cart} isAuthenticated={!!user} />
 
         <div className="mt-8">
-          <MoreToLove products={moreToLoveProducts} excludeWishlisted={false} />
+          <MoreToLove
+            products={moreToLoveProducts}
+            excludeWishlisted={false}
+            title="Popular Products"
+          />
         </div>
       </section>
     </main>

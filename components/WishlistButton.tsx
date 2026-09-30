@@ -84,7 +84,7 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
       onClick={handleWishlist}
       disabled={loading || !initialized}
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-      className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-gray-900/95 shadow-md backdrop-blur transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70"
+      className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-black shadow-md backdrop-blur transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
     >
       {loading || !initialized ? (
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-700 border-t-black" />
