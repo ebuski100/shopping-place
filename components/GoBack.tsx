@@ -2,11 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-const GoBack = () => {
+
+type GoBackProps = {
+  href?: string;
+};
+
+const GoBack = ({ href }: GoBackProps) => {
   const router = useRouter();
   function handleBack() {
+    if (href) {
+      router.push(href);
+      return;
+    }
+
     router.back();
   }
+
   return (
     <button
       type="button"

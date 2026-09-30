@@ -15,6 +15,11 @@ export type ProductDTO = {
   updatedAt: string;
 };
 
+export type ProductRating = {
+  averageRating: number;
+  totalReviews: number;
+};
+
 export type CartProduct = Pick<
   ProductDTO,
   "id" | "name" | "price" | "image" | "stock"

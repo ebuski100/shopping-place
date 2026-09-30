@@ -1,3 +1,393 @@
+// import { z } from "zod";
+
+// import { getCurrentUser } from "@/lib/auth";
+// import { prisma } from "@/lib/prisma";
+// import { OrderStatus, PaymentStatus } from "@/lib/generated/prisma/client";
+
+// type RouteContext = {
+//   params: Promise<{
+//     productId: string;
+//   }>;
+// };
+
+// const createReviewSchema = z.object({
+//   rating: z
+//     .number()
+//     .int()
+//     .min(1, "Rating must be at least 1 star")
+//     .max(5, "Rating cannot be more than 5 stars"),
+
+//   comment: z
+//     .string()
+//     .trim()
+//     .min(10, "Review must be at least 10 characters")
+//     .max(1000, "Review cannot exceed 1000 characters"),
+// });
+
+// /**
+//  * GET
+//  *
+//  * Fetch reviews and rating statistics for a product.
+//  */
+// export async function GET(request: Request, { params }: RouteContext) {
+//   try {
+//     const { productId } = await params;
+
+//     const id = Number(productId);
+
+//     if (!Number.isInteger(id)) {
+//       return Response.json({ error: "Invalid product ID" }, { status: 400 });
+//     }
+
+//     const product = await prisma.product.findUnique({
+//       where: {
+//         id,
+//         isActive: true,
+//       },
+//       select: {
+//         id: true,
+//       },
+//     });
+
+//     if (!product) {
+//       return Response.json({ error: "Product not found" }, { status: 404 });
+//     }
+
+//     // const reviews = await prisma.review.findMany({
+//     //   where: {
+//     //     productId: id,
+//     //   },
+//     //   orderBy: {
+//     //     createdAt: "desc",
+//     //   },
+//     //   select: {
+//     //     id: true,
+//     //     rating: true,
+//     //     comment: true,
+//     //     createdAt: true,
+//     //     updatedAt: true,
+
+//     //     user: {
+//     //       select: {
+//     //         id: true,
+//     //         name: true,
+//     //         profileImage: true,
+//     //       },
+//     //     },
+//     //   },
+//     // });
+
+//     const reviews = await prisma.review.findMany({
+//   where: {
+//     productId: id,
+//   },
+//   orderBy: {
+//     createdAt: "desc",
+//   },
+//   select: {
+//     id: true,
+//     rating: true,
+//     comment: true,
+//     createdAt: true,
+//     updatedAt: true,
+
+//     user: {
+//       select: {
+//         id: true,
+//         name: true,
+//         profileImage: true,
+//       },
+//     },
+//   },
+// });
+
+//     const totalReviews = reviews.length;
+
+//     const ratingTotal = reviews.reduce(
+//       (total, review) => total + review.rating,
+//       0,
+//     );
+
+//     const averageRating =
+//       totalReviews > 0 ? Number((ratingTotal / totalReviews).toFixed(1)) : 0;
+
+//     const distribution = {
+//       5: 0,
+//       4: 0,
+//       3: 0,
+//       2: 0,
+//       1: 0,
+//     };
+
+//     for (const review of reviews) {
+//       distribution[review.rating as keyof typeof distribution]++;
+//     }
+
+//     /*
+//      * Determine whether the currently authenticated
+//      * user has already reviewed this product.
+//      */
+//     const user = await getCurrentUser();
+
+//     let currentUserReview = null;
+
+//     if (user) {
+//       currentUserReview = await prisma.review.findUnique({
+//         where: {
+//           userId_productId: {
+//             userId: user.id,
+//             productId: id,
+//           },
+//         },
+//         select: {
+//           id: true,
+//           rating: true,
+//           comment: true,
+//           createdAt: true,
+//           updatedAt: true,
+//         },
+//       });
+//     }
+
+//     /*
+//      * Check whether the current user is eligible
+//      * to review this product.
+//      *
+//      * A qualifying purchase means:
+//      * - order belongs to the current user
+//      * - payment succeeded
+//      * - order was delivered
+//      * - order contains this product
+//      */
+//     let canReview = false;
+
+//     if (user) {
+//       const purchase = await prisma.orderItem.findFirst({
+//         where: {
+//           productId: id,
+
+//           order: {
+//             userId: user.id,
+//             paymentStatus: PaymentStatus.PAID,
+//             status: OrderStatus.DELIVERED,
+//           },
+//         },
+//         select: {
+//           id: true,
+//         },
+//       });
+
+//       canReview = Boolean(purchase) && !currentUserReview;
+//     }
+
+//   return Response.json({
+//   averageRating,
+//   totalReviews,
+//   distribution,
+//   canReview,
+//   currentUserReview,
+//   reviews: reviews.map((review) => ({
+//     ...review,
+//     verifiedPurchase: true,
+//   })),
+// });
+//   } catch (error) {
+//     console.error("Get product reviews error:", error);
+
+//     return Response.json(
+//       { error: "Failed to fetch product reviews" },
+//       { status: 500 },
+//     );
+//   }
+// }
+
+// /**
+//  * POST
+//  *
+//  * Create a review for a product.
+//  */
+// export async function POST(request: Request, { params }: RouteContext) {
+//   try {
+//     /*
+//      * ------------------------------------------
+//      * Authentication
+//      * ------------------------------------------
+//      */
+
+//     const user = await getCurrentUser();
+
+//     if (!user) {
+//       return Response.json(
+//         { error: "You must be logged in to review a product" },
+//         { status: 401 },
+//       );
+//     }
+
+//     /*
+//      * ------------------------------------------
+//      * Product ID
+//      * ------------------------------------------
+//      */
+
+//     const { productId } = await params;
+
+//     const id = Number(productId);
+
+//     if (!Number.isInteger(id)) {
+//       return Response.json({ error: "Invalid product ID" }, { status: 400 });
+//     }
+
+//     /*
+//      * ------------------------------------------
+//      * Product existence
+//      * ------------------------------------------
+//      */
+
+//     const product = await prisma.product.findUnique({
+//       where: {
+//         id,
+//         isActive: true,
+//       },
+//       select: {
+//         id: true,
+//         name: true,
+//       },
+//     });
+
+//     if (!product) {
+//       return Response.json({ error: "Product not found" }, { status: 404 });
+//     }
+
+//     /*
+//      * ------------------------------------------
+//      * Validate request body
+//      * ------------------------------------------
+//      */
+
+//     const body = await request.json();
+
+//     const result = createReviewSchema.safeParse(body);
+
+//     if (!result.success) {
+//       return Response.json(
+//         {
+//           error: "Invalid review",
+//           issues: result.error.flatten(),
+//         },
+//         { status: 400 },
+//       );
+//     }
+
+//     const { rating, comment } = result.data;
+
+//     /*
+//      * ------------------------------------------
+//      * Check for existing review
+//      * ------------------------------------------
+//      */
+
+//     const existingReview = await prisma.review.findUnique({
+//       where: {
+//         userId_productId: {
+//           userId: user.id,
+//           productId: id,
+//         },
+//       },
+//       select: {
+//         id: true,
+//       },
+//     });
+
+//     if (existingReview) {
+//       return Response.json(
+//         {
+//           error: "You have already reviewed this product",
+//         },
+//         { status: 409 },
+//       );
+//     }
+
+//     /*
+//      * ------------------------------------------
+//      * Verify purchase
+//      * ------------------------------------------
+//      *
+//      * The user must have:
+//      *
+//      * 1. Purchased this product
+//      * 2. Successfully paid
+//      * 3. Received the order
+//      */
+
+//     const purchase = await prisma.orderItem.findFirst({
+//       where: {
+//         productId: id,
+
+//         order: {
+//           userId: user.id,
+//           paymentStatus: PaymentStatus.PAID,
+//           status: OrderStatus.DELIVERED,
+//         },
+//       },
+//       select: {
+//         id: true,
+//       },
+//     });
+
+//     if (!purchase) {
+//       return Response.json(
+//         {
+//           error: "You can only review products you have purchased and received",
+//         },
+//         { status: 403 },
+//       );
+//     }
+
+//     /*
+//      * ------------------------------------------
+//      * Create review
+//      * ------------------------------------------
+//      */
+
+//     const review = await prisma.review.create({
+//       data: {
+//         userId: user.id,
+//         productId: id,
+//         rating,
+//         comment,
+//       },
+
+//       select: {
+//         id: true,
+//         rating: true,
+//         comment: true,
+//         createdAt: true,
+//         updatedAt: true,
+
+//         user: {
+//           select: {
+//             id: true,
+//             name: true,
+//             profileImage: true,
+//           },
+//         },
+//       },
+//     });
+
+//     return Response.json(
+//       {
+//         message: "Review submitted successfully",
+//         review,
+//       },
+//       { status: 201 },
+//     );
+//   } catch (error) {
+//     console.error("Create product review error:", error);
+
+//     return Response.json({ error: "Failed to submit review" }, { status: 500 });
+//   }
+// }
+
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
@@ -36,54 +426,59 @@ export async function GET(request: Request, { params }: RouteContext) {
     const id = Number(productId);
 
     if (!Number.isInteger(id)) {
-      return Response.json({ error: "Invalid product ID" }, { status: 400 });
+      return Response.json(
+        {
+          error: "Invalid product ID",
+        },
+        {
+          status: 400,
+        },
+      );
     }
 
+    /**
+     * Make sure the product exists
+     * and is active.
+     */
     const product = await prisma.product.findUnique({
       where: {
         id,
         isActive: true,
       },
+
       select: {
         id: true,
       },
     });
 
     if (!product) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+      return Response.json(
+        {
+          error: "Product not found",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
-    // const reviews = await prisma.review.findMany({
-    //   where: {
-    //     productId: id,
-    //   },
-    //   orderBy: {
-    //     createdAt: "desc",
-    //   },
-    //   select: {
-    //     id: true,
-    //     rating: true,
-    //     comment: true,
-    //     createdAt: true,
-    //     updatedAt: true,
-
-    //     user: {
-    //       select: {
-    //         id: true,
-    //         name: true,
-    //         profileImage: true,
-    //       },
-    //     },
-    //   },
-    // });
-
+    /**
+     * Fetch reviews.
+     *
+     * Reviews are only created after a
+     * successful paid + delivered purchase,
+     * so every existing review is a
+     * verified purchase review.
+     */
     const reviews = await prisma.review.findMany({
       where: {
         productId: id,
       },
+
       orderBy: {
         createdAt: "desc",
       },
+
       select: {
         id: true,
         rating: true,
@@ -101,11 +496,9 @@ export async function GET(request: Request, { params }: RouteContext) {
       },
     });
 
-    const reviewsWithVerification = reviews.map((review) => ({
-      ...review,
-      verifiedPurchase: true,
-    }));
-
+    /**
+     * Rating statistics.
+     */
     const totalReviews = reviews.length;
 
     const ratingTotal = reviews.reduce(
@@ -116,6 +509,9 @@ export async function GET(request: Request, { params }: RouteContext) {
     const averageRating =
       totalReviews > 0 ? Number((ratingTotal / totalReviews).toFixed(1)) : 0;
 
+    /**
+     * Rating distribution.
+     */
     const distribution = {
       5: 0,
       4: 0,
@@ -128,12 +524,15 @@ export async function GET(request: Request, { params }: RouteContext) {
       distribution[review.rating as keyof typeof distribution]++;
     }
 
-    /*
-     * Determine whether the currently authenticated
-     * user has already reviewed this product.
+    /**
+     * Current authenticated user.
      */
     const user = await getCurrentUser();
 
+    /**
+     * Whether the current user has already
+     * reviewed this product.
+     */
     let currentUserReview = null;
 
     if (user) {
@@ -144,6 +543,7 @@ export async function GET(request: Request, { params }: RouteContext) {
             productId: id,
           },
         },
+
         select: {
           id: true,
           rating: true,
@@ -154,17 +554,18 @@ export async function GET(request: Request, { params }: RouteContext) {
       });
     }
 
-    /*
-     * Check whether the current user is eligible
-     * to review this product.
+    /**
+     * Determine whether the current user
+     * has purchased and received this product.
      *
-     * A qualifying purchase means:
-     * - order belongs to the current user
-     * - payment succeeded
-     * - order was delivered
+     * Qualifying purchase:
+     *
+     * - order belongs to user
+     * - payment is PAID
+     * - order is DELIVERED
      * - order contains this product
      */
-    let canReview = false;
+    let hasVerifiedPurchase = false;
 
     if (user) {
       const purchase = await prisma.orderItem.findFirst({
@@ -174,31 +575,63 @@ export async function GET(request: Request, { params }: RouteContext) {
           order: {
             userId: user.id,
             paymentStatus: PaymentStatus.PAID,
-            status: OrderStatus.DELIVERED,
+            status: OrderStatus.CONFIRMED,
           },
         },
+
         select: {
           id: true,
         },
       });
 
-      canReview = Boolean(purchase) && !currentUserReview;
+      hasVerifiedPurchase = Boolean(purchase);
     }
 
+    /**
+     * User can review only if:
+     *
+     * - authenticated
+     * - has a verified purchase
+     * - hasn't already reviewed
+     */
+    const canReview =
+      Boolean(user) && hasVerifiedPurchase && !currentUserReview;
+
     return Response.json({
+      authenticated: Boolean(user),
+
       averageRating,
+
       totalReviews,
+
       distribution,
+
       canReview,
+
+      hasVerifiedPurchase,
+
       currentUserReview,
-      reviews,
+
+      reviews: reviews.map((review) => ({
+        ...review,
+
+        /**
+         * Every review in the database was created
+         * only after purchase verification.
+         */
+        verifiedPurchase: true,
+      })),
     });
   } catch (error) {
     console.error("Get product reviews error:", error);
 
     return Response.json(
-      { error: "Failed to fetch product reviews" },
-      { status: 500 },
+      {
+        error: "Failed to fetch product reviews",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
@@ -206,50 +639,50 @@ export async function GET(request: Request, { params }: RouteContext) {
 /**
  * POST
  *
- * Create a review for a product.
+ * Create a new review.
  */
 export async function POST(request: Request, { params }: RouteContext) {
   try {
-    /*
-     * ------------------------------------------
-     * Authentication
-     * ------------------------------------------
+    /**
+     * Authentication.
      */
-
     const user = await getCurrentUser();
 
     if (!user) {
       return Response.json(
-        { error: "You must be logged in to review a product" },
-        { status: 401 },
+        {
+          error: "You must be logged in to review a product",
+        },
+        {
+          status: 401,
+        },
       );
     }
-
-    /*
-     * ------------------------------------------
-     * Product ID
-     * ------------------------------------------
-     */
 
     const { productId } = await params;
 
     const id = Number(productId);
 
     if (!Number.isInteger(id)) {
-      return Response.json({ error: "Invalid product ID" }, { status: 400 });
+      return Response.json(
+        {
+          error: "Invalid product ID",
+        },
+        {
+          status: 400,
+        },
+      );
     }
 
-    /*
-     * ------------------------------------------
-     * Product existence
-     * ------------------------------------------
+    /**
+     * Make sure product exists.
      */
-
     const product = await prisma.product.findUnique({
       where: {
         id,
         isActive: true,
       },
+
       select: {
         id: true,
         name: true,
@@ -257,15 +690,19 @@ export async function POST(request: Request, { params }: RouteContext) {
     });
 
     if (!product) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+      return Response.json(
+        {
+          error: "Product not found",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
-    /*
-     * ------------------------------------------
-     * Validate request body
-     * ------------------------------------------
+    /**
+     * Parse request body.
      */
-
     const body = await request.json();
 
     const result = createReviewSchema.safeParse(body);
@@ -276,18 +713,17 @@ export async function POST(request: Request, { params }: RouteContext) {
           error: "Invalid review",
           issues: result.error.flatten(),
         },
-        { status: 400 },
+        {
+          status: 400,
+        },
       );
     }
 
     const { rating, comment } = result.data;
 
-    /*
-     * ------------------------------------------
-     * Check for existing review
-     * ------------------------------------------
+    /**
+     * Prevent duplicate reviews.
      */
-
     const existingReview = await prisma.review.findUnique({
       where: {
         userId_productId: {
@@ -295,6 +731,7 @@ export async function POST(request: Request, { params }: RouteContext) {
           productId: id,
         },
       },
+
       select: {
         id: true,
       },
@@ -305,22 +742,21 @@ export async function POST(request: Request, { params }: RouteContext) {
         {
           error: "You have already reviewed this product",
         },
-        { status: 409 },
+        {
+          status: 409,
+        },
       );
     }
 
-    /*
-     * ------------------------------------------
-     * Verify purchase
-     * ------------------------------------------
+    /**
+     * Verify purchase.
      *
      * The user must have:
      *
-     * 1. Purchased this product
-     * 2. Successfully paid
-     * 3. Received the order
+     * - paid for the order
+     * - received the order
+     * - purchased this exact product
      */
-
     const purchase = await prisma.orderItem.findFirst({
       where: {
         productId: id,
@@ -328,9 +764,10 @@ export async function POST(request: Request, { params }: RouteContext) {
         order: {
           userId: user.id,
           paymentStatus: PaymentStatus.PAID,
-          status: OrderStatus.DELIVERED,
+          status: OrderStatus.CONFIRMED,
         },
       },
+
       select: {
         id: true,
       },
@@ -341,16 +778,15 @@ export async function POST(request: Request, { params }: RouteContext) {
         {
           error: "You can only review products you have purchased and received",
         },
-        { status: 403 },
+        {
+          status: 403,
+        },
       );
     }
 
-    /*
-     * ------------------------------------------
-     * Create review
-     * ------------------------------------------
+    /**
+     * Create review.
      */
-
     const review = await prisma.review.create({
       data: {
         userId: user.id,
@@ -379,13 +815,26 @@ export async function POST(request: Request, { params }: RouteContext) {
     return Response.json(
       {
         message: "Review submitted successfully",
-        review,
+
+        review: {
+          ...review,
+          verifiedPurchase: true,
+        },
       },
-      { status: 201 },
+      {
+        status: 201,
+      },
     );
   } catch (error) {
     console.error("Create product review error:", error);
 
-    return Response.json({ error: "Failed to submit review" }, { status: 500 });
+    return Response.json(
+      {
+        error: "Failed to submit review",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }

@@ -21,8 +21,6 @@ export default async function HomePage() {
 
   const products: Product[] = await response.json();
 
-  const categories = [...new Set(products.map((product) => product.category))];
-
   return (
     <main className="py-8  pb-30  pt-20">
       <Header />

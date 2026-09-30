@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 import { Toaster } from "sonner";
 import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
 
 export const metadata: Metadata = {
   title: "ecommerce app",
@@ -44,14 +35,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white  w-full max-w-7xl ">
+        <ProductRatingsLoader />
         <WishlistInitializer />
         <ThemeInitializer />
 
         {children}
 
         <Toaster position="bottom-left" richColors closeButton />
-
-        {/* <Footer /> */}
       </body>
     </html>
   );

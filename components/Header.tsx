@@ -267,10 +267,12 @@ export default function Header() {
                   </button>
                 </div>
               </div>
+
               {user && <NotificationBell />}
             </div>
           )}
         </div>
+        <div className="flex  md:hidden">{user && <NotificationBell />}</div>
 
         {/* Mobile Menu Button */}
         <button

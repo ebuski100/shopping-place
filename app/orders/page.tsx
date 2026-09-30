@@ -36,7 +36,7 @@ export default async function OrdersPage() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl p-8 pb-30">
       <div className="flex items-center mb-3 gap-2">
-        <GoBack />
+        <GoBack href="/" />
         <h1 className=" text-2xl font-bold text-gray-900 dark:text-white">
           My Orders
         </h1>

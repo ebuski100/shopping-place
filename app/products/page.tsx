@@ -80,7 +80,7 @@ export default async function ProductsPage({
   ].sort();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-15 pl-45 lg:pl-65 sm:pl-57">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-15 pl-40 lg:pl-65 sm:pl-55">
       <Header />
 
       <div className="flex min-h-[calc(100vh-80px)]">
@@ -88,7 +88,7 @@ export default async function ProductsPage({
 
         <aside className="fixed top-16 left-0 bottom-16 w-40    overflow-y-auto  bg-white dark:bg-gray-900 sm:w-52 lg:w-60 z-40 pb-5">
           <div className="p-3 sm:p-5">
-            <h2 className="mb-4 text-sm font-bold  tracking-wide text-gray-900 dark:text-white sm:text-base">
+            <h2 className="mb-4 text-sm font-bold  tracking-wide text-green-600  sm:text-base">
               Categories
             </h2>
 
@@ -151,9 +151,14 @@ export default async function ProductsPage({
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols gap-3 sm:grid-cols md:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    showDescription={false}
+                    showCategory={false}
+                  />
                 ))}
               </div>
             )}
