@@ -37,7 +37,7 @@ const faqs = [
 
 export default function HelpPage() {
   return (
-    <div className="flex min-h-screen flex-col  text-gray-900 dark:bg-gray-950 dark:text-white bg-gray-50">
+    <div className="flex min-h-screen flex-col  text-gray-900 dark:bg-gray-950 dark:text-white bg-gray-50 pt-10">
       <Header />
 
       <main className="flex-1">

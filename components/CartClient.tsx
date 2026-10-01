@@ -1185,7 +1185,7 @@ export default function CartClient({
 
             setAuthPromptOpen(true);
           }}
-          className="w-[70%] rounded-md bg-black py-3 text-white disabled:opacity-50"
+          className="w-[70%] rounded-md bg-black py-3 text-white disabled:opacity-50 border dark:bg-gray-900 dark:border-gray-300"
         >
           {authLoading ? "Checking..." : "Proceed to Checkout"}
         </button>

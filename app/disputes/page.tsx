@@ -1,24 +1,31 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import GoBack from "@/components/GoBack";
 
 export default function DisputesPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+    <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white pt-10">
       <Header />
 
       <main className="flex-1">
         <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-10">
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {/* <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
               Customer Support
-            </p>
+            </p> */}
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Disputes & Reports
-            </h1>
+            <div className="flex items-center">
+              <div className=" mt-2 -ml-2 mr-2">
+                <GoBack />
+              </div>
 
-            <p className="mt-3 text-gray-500 dark:text-gray-400">
+              <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                Disputes & Reports
+              </h1>
+            </div>
+
+            <p className="mt-3 text-gray-500 dark:text-gray-400 ml-10">
               Report problems with orders, products, payments, or other
               marketplace activity.
             </p>

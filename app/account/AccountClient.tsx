@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
 import {
   ArrowRight,
   Heart,
@@ -40,6 +41,26 @@ export default function AccountClient({ user }: AccountClientProps) {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+
+  useEffect(() => {
+    if (!error) return;
+
+    const timer = setTimeout(() => {
+      setError("");
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -183,27 +204,64 @@ export default function AccountClient({ user }: AccountClientProps) {
         <section className="rounded-xl border border-gray-500 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-sm">
           <div className="flex flex-col items-center gap-6 sm:flex-row">
             <div className="relative">
-              {profileImage ? (
-                <div className="relative h-28 w-28 overflow-hidden rounded-full">
-                  <Image
-                    src={profileImage}
-                    alt="Profile"
-                    fill
-                    sizes="112px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-3xl font-bold text-gray-600 dark:text-gray-300">
-                  {initial}
-                </div>
-              )}
+              <div className="relative h-28 w-28">
+                {profileImage ? (
+                  <div className="relative h-28 w-28 overflow-hidden rounded-full">
+                    <Image
+                      src={profileImage}
+                      alt="Profile"
+                      fill
+                      sizes="112px"
+                      className={`object-cover transition-opacity duration-200 ${
+                        uploading ? "opacity-60" : "opacity-100"
+                      }`}
+                    />
+
+                    {uploading && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-[1px]">
+                        <div
+                          className="h-8 w-8 animate-spin rounded-full border-3 border-white/40 border-t-white"
+                          aria-label="Uploading profile picture"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className={`flex h-28 w-28 items-center justify-center rounded-full bg-gray-200 text-3xl font-bold text-gray-600 transition-opacity duration-200 dark:bg-gray-700 dark:text-gray-300 ${
+                      uploading ? "opacity-60" : "opacity-100"
+                    }`}
+                  >
+                    {initial}
+
+                    {uploading && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-[1px]">
+                        <div
+                          className="h-8 w-8 animate-spin rounded-full border-3 border-white/40 border-t-white"
+                          aria-label="Uploading profile picture"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <label
                 htmlFor="profile-image"
-                className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-black px-3 py-2 text-xs font-medium text-white hover:bg-gray-800"
+                className={`absolute bottom-0 right-0 rounded-full px-3 py-2 text-xs font-medium text-white transition ${
+                  uploading
+                    ? "cursor-not-allowed bg-gray-500"
+                    : "cursor-pointer bg-black hover:bg-gray-800"
+                }`}
               >
-                {uploading ? "..." : "Edit"}
+                {uploading ? (
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                    Uploading...
+                  </span>
+                ) : (
+                  "Edit"
+                )}
               </label>
 
               <input
