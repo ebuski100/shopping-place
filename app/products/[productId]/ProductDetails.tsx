@@ -1,6 +1,7 @@
 "use client";
 
 import type { Product } from "@/lib/generated/prisma/client";
+import Image from "next/image";
 import { Heart, Package, Star, Truck } from "lucide-react";
 import ProductDetailHeader from "@/components/ProductDetailHeader";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -10,63 +11,59 @@ import Reviews from "./Reviews";
 import QuantitySelector from "@/components/QuantitySelector";
 import { useState } from "react";
 
+import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
+import { useProductRatingsStore } from "@/lib/store/productRatingsStore";
+
 type ProductDetailsProps = {
   product: Product;
 };
 
-function Stars({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={index}
-          size={18}
-          className={
-            index < Math.round(rating)
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300"
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function ProductDetails({ product }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
-  const rating = 4.7;
-  const reviewCount = 128;
 
   const isInStock = product.stock > 0;
 
+  const rating = useProductRatingsStore((state) => state.ratings[product.id]);
+
   return (
     <div className="pt-15">
+      <ProductRatingsLoader />
+
       <ProductDetailHeader product={product} />
 
       <main className="mx-auto w-full max-w-7xl px-4 py-8 pb-24 sm:px-6 lg:px-8">
         {/* Main product section */}
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="relative">
-            <div className="overflow-hidden rounded-3xl bg-gray-100 dark:bg-gray-800 border border-gray-300">
+            {/* <div className="overflow-hidden rounded-3xl border border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
               <img
                 src={product.image}
                 alt={product.name}
                 className="aspect-square h-full w-full object-cover"
               />
+            </div> */}
+
+            <div className="relative aspect-square overflow-hidden rounded-3xl border border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
             </div>
 
             {/* Wishlist */}
-            <div className="absolute right-5 top-5 ">
-              <WishlistButton productId={product.id} />
+            <div className="absolute right-5 top-5">
+              <WishlistButton product={product} />
             </div>
-            <div className=" absolute left-5 top-5">
+
+            {/* Share */}
+            <div className="absolute left-5 top-5">
               <ShareButton productName={product.name} />
             </div>
           </div>
-
-          {/* ====================================== */}
-          {/* Product Information */}
-          {/* ====================================== */}
 
           <div className="flex flex-col">
             {/* Category */}
@@ -75,20 +72,32 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </p>
 
             {/* Name */}
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <h1 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               {product.name}
             </h1>
 
             {/* Rating */}
-            <div className="mt-4 flex items-center gap-3">
-              <Stars rating={rating} />
+            <div className="mt-3 flex items-center gap-2">
+              <div className="flex items-center">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    size={17}
+                    className={
+                      index < Math.round(rating?.averageRating ?? 0)
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300 dark:text-gray-600"
+                    }
+                  />
+                ))}
+              </div>
 
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {rating}
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {(rating?.averageRating ?? 0).toFixed(1)}
               </span>
 
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                ({reviewCount} reviews)
+                ({rating?.totalReviews ?? 0})
               </span>
             </div>
 
@@ -113,7 +122,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             </div>
 
             {/* Stock */}
-            <div className="mt-7 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-4">
+            <div className="mt-7 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
@@ -149,7 +158,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
 
             {/* Delivery information */}
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
                 <Truck size={20} className="text-gray-700 dark:text-gray-200" />
 
                 <div>
@@ -161,7 +170,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
                 <Heart size={20} className="text-gray-700 dark:text-gray-200" />
 
                 <div>
@@ -174,8 +183,8 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
               </div>
             </div>
 
+            {/* Quantity + Add to cart */}
             <div className="mt-7 flex w-full items-end gap-3">
-              {/* Quantity */}
               <div className="shrink-0">
                 <QuantitySelector
                   quantity={quantity}
@@ -196,10 +205,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
 
-        {/* ====================================== */}
         {/* Reviews */}
-        {/* ====================================== */}
-
         <Reviews productId={product.id} />
       </main>
     </div>

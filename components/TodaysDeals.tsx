@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Product } from "@/types/product";
@@ -151,10 +153,7 @@ export default function TodaysDeals({ products }: TodaysDealsProps) {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
                 Super Deals
               </h2>
-
-              <span className="rounded-md bg-red-500 px-2 py-1 text-xs font-bold uppercase text-white">
-                Hot
-              </span>
+              🔥
             </div>
 
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -216,10 +215,12 @@ export default function TodaysDeals({ products }: TodaysDealsProps) {
                   {/* Image */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
                     <Link href={`/products/${product.id}`}>
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 640px) 190px, 220px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </Link>
 
@@ -230,7 +231,7 @@ export default function TodaysDeals({ products }: TodaysDealsProps) {
 
                     {/* Wishlist */}
                     <div className="absolute right-2 top-2">
-                      <WishlistButton productId={product.id} />
+                      <WishlistButton product={product} />
                     </div>
 
                     {/* Cart */}

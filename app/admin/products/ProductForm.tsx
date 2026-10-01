@@ -18,8 +18,6 @@ type ProductFormProps = {
 export default function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
 
-  const editing = Boolean(product); //
-
   const [name, setName] = useState(product?.name ?? "");
 
   const [description, setDescription] = useState(product?.description ?? "");

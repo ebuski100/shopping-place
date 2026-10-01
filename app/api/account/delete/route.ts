@@ -30,15 +30,15 @@ export async function DELETE() {
       }
     }
 
-    if (user.profileImagePublicId) {
-      await deleteCloudinaryImage(user.profileImagePublicId);
-    }
-
     await prisma.user.delete({
       where: {
         id: user.id,
       },
     });
+
+    if (user.profileImagePublicId) {
+      await deleteCloudinaryImage(user.profileImagePublicId);
+    }
 
     const cookieStore = await cookies();
     cookieStore.delete("sessionId");

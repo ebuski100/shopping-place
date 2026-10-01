@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-
 import "./globals.css";
 import { Toaster } from "sonner";
+
 import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
@@ -14,29 +14,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning className="antialiased">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const theme = localStorage.getItem("theme");
-                if (theme === "dark") {
-                  document.documentElement.classList.add("dark");
-                } else if (theme === "light") {
-                  document.documentElement.classList.remove("dark");
-                } else if (
-                  window.matchMedia("(prefers-color-scheme: dark)").matches
-                ) {
-                  document.documentElement.classList.add("dark");
-                }
-              } catch {}
-            `,
-          }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white  w-full max-w-7xl ">
+      <body className="min-h-full flex w-full max-w-7xl flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
         <ProductRatingsLoader />
+
         <WishlistInitializer />
+
         <ThemeInitializer />
 
         {children}

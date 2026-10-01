@@ -13,6 +13,7 @@ type CartStore = {
   setItems: (items: CartItem[]) => void;
 
   addItem: (productId: number, quantity: number) => void;
+  // setCartCount: (count: number) => void;
 
   removeItem: (productId: number) => void;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   CheckCircle2,
   Loader2,
@@ -725,7 +726,7 @@ export default function Reviews({ productId }: ReviewsProps) {
               </h3>
 
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Sign in to see whether you're eligible to leave a verified
+                Sign in to see whether youre eligible to leave a verified
                 review.
               </p>
             </div>
@@ -814,12 +815,32 @@ export default function Reviews({ productId }: ReviewsProps) {
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
 
-                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                  {/* <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                     {review.user.profileImage ? (
                       <img
                         src={review.user.profileImage}
                         alt={review.user.name ?? "Customer"}
                         className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-gray-600 dark:text-gray-300">
+                        {review.user.name ? (
+                          getInitials(review.user.name)
+                        ) : (
+                          <UserRound className="h-5 w-5 text-gray-400" />
+                        )}
+                      </div>
+                    )}
+                  </div> */}
+
+                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    {review.user.profileImage ? (
+                      <Image
+                        src={review.user.profileImage}
+                        alt={review.user.name ?? "Customer"}
+                        fill
+                        sizes="44px"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-gray-600 dark:text-gray-300">

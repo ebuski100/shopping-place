@@ -3,7 +3,7 @@ import NotificationBell from "./NotificationBell";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
-
+import Image from "next/image";
 import { useWishlistStore } from "@/lib/store/useWishlistStore";
 
 import { useEffect, useState, useRef } from "react";
@@ -20,12 +20,24 @@ import {
   X,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
-
 type User = {
   id: number;
   name: string;
   email: string;
+  profileImage: string | null;
 };
+
+function getInitials(name: string | null) {
+  if (!name) return "?";
+
+  const parts = name.trim().split(/\s+/);
+
+  if (parts.length === 1) {
+    return parts[0].charAt(0).toUpperCase();
+  }
+
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
@@ -107,7 +119,7 @@ export default function Header() {
           href="/"
           className="text-xl font-bold tracking-tight flex text-green-600"
         >
-          <img src="/shopping-bag.png" height={30} width={30} alt="" />
+          <Image src="/shopping-bag.png" alt="" width={30} height={30} />
           <span className="hidden md:block">marketPlace</span>
         </Link>
 
@@ -203,7 +215,21 @@ export default function Header() {
                   href="/account"
                   className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  <User size={20} />
+                  <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    {user.profileImage ? (
+                      <Image
+                        src={user.profileImage}
+                        alt={user.name ?? "Profile"}
+                        fill
+                        sizes="32px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-gray-700 dark:text-gray-200">
+                        {getInitials(user.name)}
+                      </div>
+                    )}
+                  </div>
 
                   <span>{user.name}</span>
 
@@ -327,8 +353,22 @@ export default function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-2 font-medium transition hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-xl"
                   >
-                    <User size={18} />
-                    Hi,{user.name}
+                    <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                      {user.profileImage ? (
+                        <Image
+                          src={user.profileImage}
+                          alt={user.name ?? "Profile"}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-gray-700 dark:text-gray-200">
+                          {getInitials(user.name)}
+                        </div>
+                      )}
+                    </div>
+                    Hi, {user.name}
                   </Link>
 
                   <button

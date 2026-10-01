@@ -2,14 +2,15 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 import { mergeGuestCart } from "@/lib/guestCart";
 import GoBack from "@/components/GoBack";
 
 export default function RegisterPage() {
   const router = useRouter();
-
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -138,17 +139,28 @@ export default function RegisterPage() {
               Password
             </label>
 
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              minLength={6}
-              autoComplete="new-password"
-              className="w-full rounded-md border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 outline-none focus:ring-1"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+                className="w-full rounded-md border border-gray-200 bg-white p-3 pr-11 outline-none focus:ring-1 dark:border-gray-800 dark:bg-gray-900"
+                placeholder="••••••••"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 transition hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           {/* Error */}
@@ -201,7 +213,7 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <img src="/google.png" alt="" height={25} width={25} />
+                <Image src="/google.png" alt="" width={25} height={25} />
                 Continue with Google
               </>
             )}
@@ -222,7 +234,7 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <img src="/Github.png" alt="" height={25} width={25} />
+                <Image src="/Github.png" alt="" width={25} height={25} />
                 Continue with GitHub
               </>
             )}
@@ -233,7 +245,9 @@ export default function RegisterPage() {
       {/* Login Link */}
 
       <div className="mt-2 pt-2 text-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Already have an account?</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Already have an account?
+        </p>
 
         <a
           href="/login"

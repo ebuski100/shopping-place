@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
@@ -119,11 +120,21 @@ export default async function OrderPage({ params }: OrderPageProps) {
               >
                 {/* Product image */}
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 sm:h-28 sm:w-28">
-                  <img
+                  {/* <img
                     src={item.product.image}
                     alt={item.productName}
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+                  /> */}
+
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 sm:h-28 sm:w-28">
+                    <Image
+                      src={item.product.image}
+                      alt={item.productName}
+                      fill
+                      sizes="(max-width: 640px) 96px, 112px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
                 </div>
 
                 {/* Product information */}

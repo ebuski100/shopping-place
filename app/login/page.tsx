@@ -3,6 +3,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { mergeGuestCart } from "@/lib/guestCart";
 import GoBack from "@/components/GoBack";
 
@@ -179,7 +180,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <img src="/google.png" alt="" height={25} width={25} />
+                <Image src="/google.png" alt="" width={25} height={25} />
                 Continue with Google
               </>
             )}
@@ -201,7 +202,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <img src="/Github.png" alt="" height={25} width={25} />
+                <Image src="/Github.png" alt="" width={25} height={25} />
                 Continue with GitHub
               </>
             )}
@@ -210,7 +211,9 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-2  pt-2 text-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Don&apos;t have an account?</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Don&apos;t have an account?
+        </p>
 
         <a
           href="/register"

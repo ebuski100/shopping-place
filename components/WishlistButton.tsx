@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import type { Product } from "@/types/product";
+
 import { useWishlistStore } from "@/lib/store/useWishlistStore";
 import { useStoreCounts } from "@/lib/store/useStoreCounts";
 
 type WishlistButtonProps = {
-  productId: number;
+  product: Product;
 };
 
-export default function WishlistButton({ productId }: WishlistButtonProps) {
+export default function WishlistButton({ product }: WishlistButtonProps) {
   const { initialized, loadWishlist, isWishlisted, addItem, removeItem } =
     useWishlistStore();
 
@@ -18,6 +20,12 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
 
   const [loading, setLoading] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // const [mounted, setMounted] = useState(false);
+
+  // useEffect(() => {
+  //   setMounted(true);
+  // }, []);
 
   /*
    * Load wishlist once.
@@ -29,13 +37,21 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
   }, [initialized, loadWishlist]);
 
   /*
-   * Keep badge synchronized with wishlist items.
+   * Check whether this product is in the wishlist.
    */
-  const wishlisted = isWishlisted(productId);
+  // const wishlisted = isWishlisted(product.id);
 
+  const wishlisted = initialized ? isWishlisted(product.id) : false;
+
+  /*
+   * Keep the footer wishlist badge synchronized
+   * with the actual Zustand wishlist state.
+   */
   useEffect(() => {
+    if (!initialized) return;
+
     setWishlistCount(useWishlistStore.getState().items.length);
-  }, [wishlisted, setWishlistCount]);
+  }, [initialized, wishlisted, setWishlistCount]);
 
   async function handleWishlist() {
     if (loading) return;
@@ -45,7 +61,7 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
 
     try {
       if (wishlisted) {
-        await removeItem(productId);
+        await removeItem(product.id);
 
         toast("Removed from wishlist", {
           style: {
@@ -55,7 +71,7 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
           },
         });
       } else {
-        await addItem(productId);
+        await addItem(product);
 
         toast.success("Added to wishlist");
       }
@@ -84,10 +100,10 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
       onClick={handleWishlist}
       disabled={loading || !initialized}
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-      className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-black shadow-md backdrop-blur transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md backdrop-blur transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-black md:h-10 md:w-10"
     >
       {loading || !initialized ? (
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-700 border-t-black" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-black dark:border-gray-700" />
       ) : (
         <svg
           viewBox="0 0 24 24"

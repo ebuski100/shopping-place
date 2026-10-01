@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Promotion } from "@/data/promotion";
+// import Image from "next/image";
 
 type PromoBannerProps = {
   promotion: Promotion;
@@ -51,11 +52,13 @@ export default function PromoBanner({ promotion }: PromoBannerProps) {
   return (
     <article className="group relative min-h-[300px] overflow-hidden rounded-2xl bg-black sm:min-h-[340px] md:min-h-[380px]">
       {/* Background image */}
-      <img
+      {/* <Image
         src={promotion.image}
         alt={promotion.title}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+        className="object-cover transition-transform duration-700 group-hover:scale-105"
+      /> */}
 
       {/* General image darkening */}
       <div className="absolute inset-0 bg-black/20" />

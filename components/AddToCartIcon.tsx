@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 import type { Product } from "@/types/product";
-import { useStoreCounts } from "@/lib/store/useStoreCounts";
+import { addProductToCart } from "@/lib/cartActions";
 
 type AddToCartIconProps = {
   product: Product;
 };
 
 export default function AddToCartIcon({ product }: AddToCartIconProps) {
-  const { incrementCart } = useStoreCounts();
-
   const [isAnimating, setIsAnimating] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   async function handleAddToCart() {
@@ -28,25 +28,7 @@ export default function AddToCartIcon({ product }: AddToCartIconProps) {
     setIsAnimating(true);
 
     try {
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product.id,
-          quantity: 1,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to add product to cart");
-      }
-
-      // Update the footer cart badge
-      incrementCart();
+      await addProductToCart(product, 1);
 
       toast.success(`${product.name} added to cart`);
     } catch (error) {
@@ -68,17 +50,19 @@ export default function AddToCartIcon({ product }: AddToCartIconProps) {
     <button
       type="button"
       onClick={handleAddToCart}
-      disabled={loading}
+      disabled={loading || product.stock <= 0}
       aria-label={`Add ${product.name} to cart`}
-      className="flex h-12 w-12 items-center justify-center cursor-pointer rounded-full bg-white  p-2 shadow-md transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 md:h-10 md:w-10"
     >
       {loading ? (
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 dark:border-gray-700 border-t-black" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-black dark:border-gray-700" />
       ) : (
-        <img
+        <Image
           src="/cart.png"
           alt=""
-          className={`h-full w-full object-contain ${
+          width={28}
+          height={28}
+          className={`h-5 w-5 object-contain md:h-7 md:w-7 ${
             isAnimating ? "cart-pop" : ""
           }`}
         />

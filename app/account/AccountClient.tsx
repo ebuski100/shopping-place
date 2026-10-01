@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Heart,
@@ -8,7 +9,6 @@ import {
   ShoppingBag,
   ShoppingCart,
   Trash2,
-  User,
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -34,6 +34,7 @@ export default function AccountClient({ user }: AccountClientProps) {
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -123,12 +124,6 @@ export default function AccountClient({ user }: AccountClientProps) {
   }
 
   async function handleDeleteAccount() {
-    const confirmed = window.confirm(
-      "Are you sure you want to permanently delete your account? This action cannot be undone.",
-    );
-
-    if (!confirmed) return;
-
     setDeleting(true);
     setError("");
 
@@ -147,7 +142,9 @@ export default function AccountClient({ user }: AccountClientProps) {
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : "Something went wrong");
+
       setDeleting(false);
+      setShowDeleteModal(false);
     }
   }
 
@@ -187,11 +184,15 @@ export default function AccountClient({ user }: AccountClientProps) {
           <div className="flex flex-col items-center gap-6 sm:flex-row">
             <div className="relative">
               {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="h-28 w-28 rounded-full object-cover"
-                />
+                <div className="relative h-28 w-28 overflow-hidden rounded-full">
+                  <Image
+                    src={profileImage}
+                    alt="Profile"
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="flex h-28 w-28 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-3xl font-bold text-gray-600 dark:text-gray-300">
                   {initial}
@@ -220,7 +221,9 @@ export default function AccountClient({ user }: AccountClientProps) {
                 {user.name || "Welcome"}
               </h2>
 
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {user.email}
+              </p>
 
               <p className="mt-2 text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 {user.role}
@@ -243,7 +246,7 @@ export default function AccountClient({ user }: AccountClientProps) {
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                className="rounded-md border border-gray-500 dark:border-gray-700 cursor-pointer px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="rounded-md border border-gray-500  dark:border-gray-700 cursor-pointer px-4 py-2 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Edit
               </button>
@@ -262,7 +265,17 @@ export default function AccountClient({ user }: AccountClientProps) {
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 disabled={!editing || saving}
-                className="w-full rounded-md border border-gray-600 px-4 py-3 outline-none focus:ring-1 focus:ring-black disabled:bg-gray-50 dark:bg-gray-950"
+                className="
+    w-full rounded-md border border-gray-600 px-4 py-3 outline-none
+    focus:ring-1 focus:ring-black
+    disabled:cursor-not-allowed
+    disabled:bg-gray-200/20
+    disabled:text-gray-400
+    disabled:border-gray-700
+    dark:bg-gray-950
+    dark:disabled:bg-gray-900/40
+    dark:disabled:text-gray-500
+  "
               />
             </div>
 
@@ -340,7 +353,7 @@ export default function AccountClient({ user }: AccountClientProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-md border px-4 py-3 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="flex w-full items-center gap-3 rounded-md border px-4 py-3 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
             >
               <LogOut size={18} />
               Sign out
@@ -348,9 +361,9 @@ export default function AccountClient({ user }: AccountClientProps) {
 
             <button
               type="button"
-              onClick={handleDeleteAccount}
+              onClick={() => setShowDeleteModal(true)}
               disabled={deleting}
-              className="flex w-full items-center gap-3 rounded-md border border-red-200 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+              className="flex w-full items-center gap-3 rounded-md border border-red-200 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 cursor-pointer"
             >
               <Trash2 size={18} />
 
@@ -359,6 +372,54 @@ export default function AccountClient({ user }: AccountClientProps) {
           </div>
         </section>
       </div>
+
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-account-title"
+        >
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-900">
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400">
+                <Trash2 size={21} />
+              </div>
+
+              <div>
+                <h2 id="delete-account-title" className="text-lg font-semibold">
+                  Delete your account?
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
+                  This action is permanent and cannot be undone. Your account
+                  and associated data will be deleted.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800 cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="rounded-md bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+              >
+                {deleting ? "Deleting..." : "Delete account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -384,7 +445,9 @@ function AccountLink({
 
         <div>
           <p className="font-medium">{title}</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {description}
+          </p>
         </div>
       </div>
 

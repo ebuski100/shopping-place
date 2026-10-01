@@ -22,18 +22,14 @@ export default async function HomePage() {
   const products: Product[] = await response.json();
 
   return (
-    <main className="py-8  pb-30  pt-20">
+    <main className="py-8  pb-15  pt-20">
       <Header />
 
       <PromoCarousel />
 
       <TodaysDeals products={products} />
 
-      <MoreToLove
-        products={products}
-        excludeWishlisted={false}
-        title="Recommended for you"
-      />
+      <MoreToLove excludeWishlisted={false} title="Recommended for you" />
       <Footer />
     </main>
   );

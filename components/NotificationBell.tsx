@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 type Notification = {
@@ -52,11 +52,32 @@ function formatRelativeTime(date: string) {
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const notificationRef = useRef<HTMLDivElement>(null);
+
   const [unreadCount, setUnreadCount] = useState(0);
 
   const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   async function fetchNotifications() {
     try {
@@ -158,7 +179,7 @@ export default function NotificationBell() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={notificationRef}>
       {/* Bell */}
 
       <button
@@ -193,7 +214,7 @@ export default function NotificationBell() {
       {/* Dropdown */}
 
       {open && (
-        <div className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-xl border bg-white shadow-xl dark:border-gray-800 dark:bg-gray-900">
+        <div className="absolute -right-3 z-50 mt-3 w-80 overflow-hidden rounded-xl border bg-white shadow-xl border-gray-600 dark:border-gray-800 dark:bg-gray-900">
           {/* Header */}
 
           <div className="flex items-center justify-between border-b px-4 py-3 dark:border-gray-800">
