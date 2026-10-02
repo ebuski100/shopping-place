@@ -188,18 +188,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // --------------------------------------------------
-    // 11. Return Paystack transaction status
-    // --------------------------------------------------
-    //
-    // IMPORTANT:
-    //
-    // This endpoint does NOT mark the order as paid.
-    //
-    // The webhook is responsible for updating the
-    // database.
-    // --------------------------------------------------
-
     if (transaction.status !== "success") {
       return Response.json({
         success: false,

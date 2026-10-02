@@ -125,32 +125,9 @@ export async function POST(request: Request) {
 
     const total = subtotal + deliveryFee;
 
-    // --------------------------------------------------
-    // 8. Sort items consistently
-    // --------------------------------------------------
-    //
-    // This gives concurrent transactions a consistent
-    // lock/update order.
-    //
-    // Example:
-    //
-    // Order A: product 1 -> product 2
-    // Order B: product 2 -> product 1
-    //
-    // Sorting both as:
-    //
-    // product 1 -> product 2
-    //
-    // reduces deadlock risk.
-    // --------------------------------------------------
-
     const sortedItems = [...cart.items].sort(
       (a, b) => a.product.id - b.product.id,
     );
-
-    // --------------------------------------------------
-    // 9. Create order atomically
-    // --------------------------------------------------
 
     const order = await prisma.$transaction(async (tx) => {
       // ----------------------------------------------
@@ -192,7 +169,7 @@ export async function POST(request: Request) {
       // ----------------------------------------------
       // Create order
       // ----------------------------------------------
-      const reservationExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+      const reservationExpiresAt = new Date(Date.now() + 2 * 60 * 1000);
       const newOrder = await tx.order.create({
         data: {
           userId: user.id,
@@ -265,11 +242,13 @@ export async function POST(request: Request) {
       // Clear cart
       // ----------------------------------------------
 
-      await tx.cartItem.deleteMany({
-        where: {
-          cartId: cart.id,
-        },
-      });
+      //   await tx.cartItem.deleteMany({
+      //     where: {
+      //       cartId: cart.id,
+      //     },
+      //   });
+
+      //   return newOrder;
 
       return newOrder;
     });

@@ -9,9 +9,7 @@ import RecentOrders from "./RecentOrders";
 import type { OrderStatus, PaymentStatus } from "@/lib/generated/prisma/client";
 type AnalyticsRange = "7d" | "30d" | "90d" | "all";
 type OrdersByStatus = Record<string, number>;
-// type AnalyticsDashboardProps = {
-//   recentOrders: RecentOrder[];
-// };
+
 type AnalyticsOverview = {
   totalRevenue: number;
   totalOrders: number;
@@ -70,25 +68,13 @@ type DashboardCardProps = {
   description?: string;
 };
 
-// function DashboardCard({ title, value, description }: DashboardCardProps) {
-//   return (
-//     <div className="rounded-xl border bg-white dark:bg-gray-900 p-6 shadow-sm">
-//       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-
-//       <p className="mt-2 text-3xl font-bold tracking-tight">{value}</p>
-
-//       {description && (
-//         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{description}</p>
-//       )}
-//     </div>
-//   );
-// }
-
 function DashboardCard({ title, value, description }: DashboardCardProps) {
   return (
     <div className="rounded-xl border bg-white dark:bg-gray-900 p-5 shadow-sm transition hover:shadow-md">
       <div className="flex items-start justify-between">
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          {title}
+        </p>
       </div>
 
       <p className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -96,7 +82,9 @@ function DashboardCard({ title, value, description }: DashboardCardProps) {
       </p>
 
       {description && (
-        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
       )}
     </div>
   );
@@ -160,7 +148,9 @@ export default function AnalyticsDashboard() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
 
-          <p className="mt-1 text-gray-500 dark:text-gray-400">Monitor your store performance.</p>
+          <p className="mt-1 text-gray-500 dark:text-gray-400">
+            Monitor your store performance.
+          </p>
         </div>
 
         {/* Date range */}

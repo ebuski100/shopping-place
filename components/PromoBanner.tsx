@@ -51,15 +51,6 @@ export default function PromoBanner({ promotion }: PromoBannerProps) {
 
   return (
     <article className="group relative min-h-[300px] overflow-hidden rounded-2xl bg-black sm:min-h-[340px] md:min-h-[380px]">
-      {/* Background image */}
-      {/* <Image
-        src={promotion.image}
-        alt={promotion.title}
-        fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
-      /> */}
-
       {/* General image darkening */}
       <div className="absolute inset-0 bg-black/20" />
 

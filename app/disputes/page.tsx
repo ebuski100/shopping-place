@@ -11,10 +11,6 @@ export default function DisputesPage() {
       <main className="flex-1">
         <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="mb-10">
-            {/* <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Customer Support
-            </p> */}
-
             <div className="flex items-center">
               <div className=" mt-2 -ml-2 mr-2">
                 <GoBack />

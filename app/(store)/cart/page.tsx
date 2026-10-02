@@ -52,21 +52,6 @@ export default async function CartPage() {
     }
   }
 
-  /*
-   * Recommended products.
-   */
-  const moreToLoveProducts = await prisma.product.findMany({
-    where: {
-      isActive: true,
-    },
-
-    orderBy: {
-      createdAt: "desc",
-    },
-
-    take: 32,
-  });
-
   return (
     <>
       {/* Product ratings are loaded once on the client */}

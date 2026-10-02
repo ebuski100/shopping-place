@@ -1,5 +1,3 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import SettingsClient from "./SettingsClient";
 import GoBack from "@/components/GoBack";
 
@@ -26,8 +24,6 @@ export default function SettingsPage() {
           <SettingsClient />
         </div>
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 }

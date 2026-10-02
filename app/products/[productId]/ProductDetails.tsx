@@ -35,14 +35,6 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         {/* Main product section */}
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="relative">
-            {/* <div className="overflow-hidden rounded-3xl border border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="aspect-square h-full w-full object-cover"
-              />
-            </div> */}
-
             <div className="relative aspect-square overflow-hidden rounded-3xl border border-gray-300 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
               <Image
                 src={product.image}

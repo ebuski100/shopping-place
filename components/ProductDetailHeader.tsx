@@ -21,12 +21,6 @@ export default function ProductDetailHeader({
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-2 sm:px-6 lg:px-8">
         <GoBack />
 
-        {/* <div className="mb-6 text-green-600 font-bold  text-gray-500 dark:text-gray-400 flex-1 flex  h-full items-center pt-5">
-          <span className="font-medium text-green-600 dark:text-green-600">
-            {product.name}
-          </span>
-        </div> */}
-
         <div className="min-w-0 flex-1 pt-1">
           <span
             className="block truncate font-medium text-green-600 dark:text-green-500"
