@@ -122,8 +122,8 @@ export default function HelpPage() {
             <h2 className="text-xl font-semibold">Still need help?</h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
-              If you couldn't find an answer here, contact our support team with
-              your order number and a description of the issue.
+              If you could not find an answer here, contact our support team
+              with your order number and a description of the issue.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
