@@ -3,7 +3,20 @@ import { releaseExpiredReservations } from "@/lib/orders/releaseExpiredReservati
 export async function GET(request: Request) {
   const authorization = request.headers.get("authorization");
 
-  if (authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  // if (authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  //   return Response.json(
+  //     {
+  //       error: "Unauthorized",
+  //     },
+  //     {
+  //       status: 401,
+  //     },
+  //   );
+  // }
+
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (!cronSecret || authorization !== `Bearer ${cronSecret}`) {
     return Response.json(
       {
         error: "Unauthorized",
