@@ -39,9 +39,9 @@ const themeStyles = {
 
   home: {
     accent: "text-emerald-300",
-    button: "bg-white dark:bg-gray-900 text-stone-900",
+    button: "bg-white dark:bg-gray-700 text-gray-200",
     overlay:
-      "bg-gradient-to-r from-stone-950/85 via-stone-900/45 to-transparent",
+      "bg-gradient-to-r from-stone-950/85 via-stone-900/45 to-transparent ",
     badge: "bg-emerald-400/20 text-emerald-200 border-emerald-300/30",
   },
 } as const;
@@ -50,7 +50,7 @@ export default function PromoBanner({ promotion }: PromoBannerProps) {
   const theme = themeStyles[promotion.theme];
 
   return (
-    <article className="group relative min-h-[300px] overflow-hidden rounded-2xl bg-black sm:min-h-[340px] md:min-h-[380px]">
+    <article className="group relative min-h-[200px] overflow-hidden rounded-2xl bg-black sm:min-h-[340px] md:min-h-[380px]">
       {/* General image darkening */}
       <div className="absolute inset-0 bg-black/20" />
 
@@ -58,7 +58,7 @@ export default function PromoBanner({ promotion }: PromoBannerProps) {
       <div className={`absolute inset-0 ${theme.overlay}`} />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[300px] items-center px-6 py-10 sm:min-h-[340px] sm:px-10 md:min-h-[380px] md:px-14">
+      <div className="relative z-10 flex min-h-[200px] items-center px-6 py-10 sm:min-h-[340px] sm:px-10 md:min-h-[380px] md:px-14">
         <div className="max-w-xl text-white">
           {/* Campaign badge */}
           <div

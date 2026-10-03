@@ -108,3 +108,44 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function DELETE() {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const publicId = user.profileImagePublicId;
+
+    // Remove the image from Cloudinary if one exists.
+    if (publicId) {
+      await deleteCloudinaryImage(publicId);
+    }
+
+    // Remove the image information from the database.
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        profileImage: null,
+        profileImagePublicId: null,
+      },
+    });
+
+    return Response.json({
+      message: "Profile picture removed successfully",
+    });
+  } catch (error) {
+    console.error("Profile image deletion error:", error);
+
+    return Response.json(
+      {
+        error: "Failed to remove profile picture",
+      },
+      { status: 500 },
+    );
+  }
+}

@@ -69,7 +69,7 @@ export default async function AdminCustomerDetailsPage({
         {/* Back */}
         <Link
           href="/admin/customers"
-          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-black"
+          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-200"
         >
           ← Back to customers
         </Link>
@@ -80,7 +80,9 @@ export default async function AdminCustomerDetailsPage({
             {customer.name || "Unnamed Customer"}
           </h1>
 
-          <p className="mt-2 text-gray-500 dark:text-gray-400">Customer #{customer.id}</p>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
+            Customer #{customer.id}
+          </p>
 
           <div className="flex flex-col items-start gap-3 sm:items-end">
             <div
@@ -140,31 +142,41 @@ export default async function AdminCustomerDetailsPage({
         {/* Statistics */}
         <section className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total Orders</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Orders
+            </p>
 
             <p className="mt-2 text-3xl font-bold">{totalOrders}</p>
           </div>
 
           <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Paid Orders</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Paid Orders
+            </p>
 
             <p className="mt-2 text-3xl font-bold">{paidOrders.length}</p>
           </div>
 
           <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Pending Orders</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Pending Orders
+            </p>
 
             <p className="mt-2 text-3xl font-bold">{pendingOrders.length}</p>
           </div>
 
           <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Delivered</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Delivered
+            </p>
 
             <p className="mt-2 text-3xl font-bold">{deliveredOrders.length}</p>
           </div>
 
           <div className="rounded-xl border bg-white dark:bg-gray-900 p-6">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total Spent</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Spent
+            </p>
 
             <p className="mt-2 text-2xl font-bold">
               ₦{totalSpent.toLocaleString("en-NG")}
@@ -223,7 +235,10 @@ export default async function AdminCustomerDetailsPage({
 
                 <tbody className="divide-y">
                   {customer.orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr
+                      key={order.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
                       {/* Order */}
                       <td className="px-6 py-4 font-medium">#{order.id}</td>
 
@@ -287,7 +302,8 @@ function PaymentBadge({ status }: { status: string }) {
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-medium ${
-        styles[status] ?? "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+        styles[status] ??
+        "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
       }`}
     >
       {status}
@@ -309,7 +325,8 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-medium ${
-        styles[status] ?? "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+        styles[status] ??
+        "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
       }`}
     >
       {status.replaceAll("_", " ")}

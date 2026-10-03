@@ -234,7 +234,9 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <Image src="/Github.png" alt="" width={25} height={25} />
+                <div className="dark:bg-white dark:rounded-full ">
+                  <Image src="/Github.png" alt="" width={25} height={25} />
+                </div>
                 Continue with GitHub
               </>
             )}

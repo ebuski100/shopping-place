@@ -44,7 +44,7 @@ export default async function AdminProductPage({
         {/* Back */}
         <Link
           href="/admin/products"
-          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-black"
+          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-200"
         >
           ← Back to products
         </Link>
@@ -54,13 +54,15 @@ export default async function AdminProductPage({
           <div>
             <h1 className="text-3xl font-bold">{product.name}</h1>
 
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Product #{product.id}</p>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Product #{product.id}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <Link
               href={`/admin/products/${product.id}/edit`}
-              className="rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              className="rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800 border cursor-pointer"
             >
               Edit Product
             </Link>
@@ -75,7 +77,7 @@ export default async function AdminProductPage({
         {/* Product overview */}
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Product image */}
-          <section className="rounded-xl border bg-white dark:bg-gray-900 p-6">
+          <section className="rounded-xl border bg-white  dark:bg-gray-900 p-6">
             <h2 className="mb-5 text-xl font-semibold">Product Image</h2>
 
             <div className="overflow-hidden rounded-lg border bg-gray-50 dark:bg-gray-950">
@@ -101,7 +103,9 @@ export default async function AdminProductPage({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Category</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Category
+                </p>
 
                 <p className="mt-1 font-medium capitalize">
                   {product.category}
@@ -109,7 +113,9 @@ export default async function AdminProductPage({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Price</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Price
+                </p>
 
                 <p className="mt-1 text-lg font-semibold">
                   ₦{product.price.toLocaleString()}
@@ -117,7 +123,9 @@ export default async function AdminProductPage({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Stock</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Stock
+                </p>
 
                 <p
                   className={`mt-1 font-semibold ${
@@ -133,7 +141,9 @@ export default async function AdminProductPage({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Status
+                </p>
 
                 <span
                   className={`mt-1 inline-block rounded-full px-3 py-1 text-xs font-medium ${
@@ -147,7 +157,9 @@ export default async function AdminProductPage({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Product ID</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Product ID
+                </p>
 
                 <p className="mt-1 font-medium">#{product.id}</p>
               </div>
@@ -155,7 +167,9 @@ export default async function AdminProductPage({
 
             {/* Description */}
             <div className="mt-8 border-t pt-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Description</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Description
+              </p>
 
               <p className="mt-2 leading-7 text-gray-700 dark:text-gray-200">
                 {product.description}
@@ -188,13 +202,17 @@ export default async function AdminProductPage({
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Product ID</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Product ID
+              </p>
 
               <p className="mt-1 font-medium">#{product.id}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Created</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Created
+              </p>
 
               <p className="mt-1 font-medium">
                 {product.createdAt.toLocaleDateString("en-NG", {
@@ -206,7 +224,9 @@ export default async function AdminProductPage({
             </div>
 
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Last Updated</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Last Updated
+              </p>
 
               <p className="mt-1 font-medium">
                 {product.updatedAt.toLocaleDateString("en-NG", {

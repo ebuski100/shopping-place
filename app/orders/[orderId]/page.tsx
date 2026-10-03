@@ -459,7 +459,7 @@ function OrderTimeline({ status }: { status: string }) {
               <p
                 className={`font-medium ${
                   current
-                    ? "text-black"
+                    ? "text-green-500"
                     : completed
                       ? "text-gray-700 dark:text-gray-200"
                       : "text-gray-400 dark:text-gray-500"

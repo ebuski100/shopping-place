@@ -180,11 +180,11 @@ export default function NewProductPage() {
   const isBusy = loading || uploading;
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 md:px-6 py-8">
       <div className="mx-auto max-w-3xl">
         <Link
           href="/admin/products"
-          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-black"
+          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-200"
         >
           ← Back to products
         </Link>

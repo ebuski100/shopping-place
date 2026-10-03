@@ -184,13 +184,17 @@ export default function NotificationsClient() {
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
       <div>
-        <GoBack />
+        <div className="flex">
+          <div className="-ml-2 mr-2">
+            <GoBack />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Notifications
+          </h1>
+        </div>
+
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Notifications
-            </h1>
-
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Stay updated about your orders and account.
             </p>
@@ -220,7 +224,7 @@ export default function NotificationsClient() {
           </h2>
 
           <p className="mx-auto mt-2 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-            We'll let you know when there are updates about your orders or
+            We will let you know when there are updates about your orders or
             account.
           </p>
         </div>

@@ -44,7 +44,7 @@ export default async function EditProductPage({
       <div className="mx-auto max-w-3xl">
         <Link
           href="/admin/products"
-          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-black"
+          className="mb-6 inline-block text-sm text-gray-500 dark:text-gray-400 hover:text-gray-200"
         >
           ← Back to products
         </Link>

@@ -17,12 +17,38 @@ function getStockStatus(stock: number): StockStatus {
   return "IN_STOCK";
 }
 
+// function StockStatusBadge({ stock }: { stock: number }) {
+//   const status = getStockStatus(stock);
+
+//   if (status === "OUT_OF_STOCK") {
+//     return (
+//       <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+//         Out of stock
+//       </span>
+//     );
+//   }
+
+//   if (status === "LOW_STOCK") {
+//     return (
+//       <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700">
+//         Low stock · {stock}
+//       </span>
+//     );
+//   }
+
+//   return (
+//     <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+//       In stock · {stock}
+//     </span>
+//   );
+// }
+
 function StockStatusBadge({ stock }: { stock: number }) {
   const status = getStockStatus(stock);
 
   if (status === "OUT_OF_STOCK") {
     return (
-      <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+      <span className="inline-flex whitespace-nowrap rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
         Out of stock
       </span>
     );
@@ -30,14 +56,14 @@ function StockStatusBadge({ stock }: { stock: number }) {
 
   if (status === "LOW_STOCK") {
     return (
-      <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700">
+      <span className="inline-flex whitespace-nowrap rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700">
         Low stock · {stock}
       </span>
     );
   }
 
   return (
-    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+    <span className="inline-flex whitespace-nowrap rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
       In stock · {stock}
     </span>
   );
@@ -54,13 +80,17 @@ function InventoryStatCard({
 }) {
   return (
     <div className="rounded-xl border bg-white dark:bg-gray-900 p-6 shadow-sm">
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        {title}
+      </p>
 
       <p className="mt-2 text-3xl font-bold tracking-tight">
         {value.toLocaleString("en-NG")}
       </p>
 
-      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        {description}
+      </p>
     </div>
   );
 }
@@ -208,7 +238,9 @@ export default async function AdminInventoryPage() {
 
         {products.length === 0 ? (
           <div className="p-10 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">No products found.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No products found.
+            </p>
 
             <Link
               href="/admin/products/new"
@@ -219,16 +251,20 @@ export default async function AdminInventoryPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[800px]">
               <thead className="border-b bg-gray-50 dark:bg-gray-950">
                 <tr>
                   <th className="px-6 py-4 text-sm font-semibold">Product</th>
 
-                  <th className="px-6 py-4 text-sm font-semibold">Category</th>
+                  <th className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+                    Category
+                  </th>
 
                   <th className="px-6 py-4 text-sm font-semibold">Stock</th>
 
-                  <th className="px-6 py-4 text-sm font-semibold">Status</th>
+                  <th className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+                    Status
+                  </th>
 
                   <th className="px-6 py-4 text-sm font-semibold">
                     Last Updated
@@ -240,7 +276,10 @@ export default async function AdminInventoryPage() {
 
               <tbody className="divide-y">
                 {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr
+                    key={product.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
                     {/* Product */}
 
                     <td className="px-6 py-4">
@@ -262,8 +301,8 @@ export default async function AdminInventoryPage() {
 
                     {/* Category */}
 
-                    <td className="px-6 py-4">
-                      <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-xs font-medium">
+                    <td className=" whitespace-nowrap px-6 py-4">
+                      <span className="rounded-full bg-gray-100 whitespace-nowrap dark:bg-gray-800 px-3 py-1 text-xs font-medium">
                         {product.category}
                       </span>
                     </td>
@@ -278,7 +317,7 @@ export default async function AdminInventoryPage() {
 
                     {/* Status */}
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <StockStatusBadge stock={product.stock} />
                     </td>
 
