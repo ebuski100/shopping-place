@@ -22,6 +22,7 @@ export async function GET() {
       orderNotifications: true,
       deliveryNotifications: true,
       promotionalNotifications: true,
+      notificationSounds: true,
     },
   });
 
@@ -40,58 +41,78 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const body = await request.json();
+    const body: unknown = await request.json();
+
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      return NextResponse.json(
+        { error: "Invalid settings payload" },
+        { status: 400 },
+      );
+    }
+
+    const input = body as Record<string, unknown>;
 
     const data: {
       theme?: Theme;
       orderNotifications?: boolean;
       deliveryNotifications?: boolean;
       promotionalNotifications?: boolean;
+      notificationSounds?: boolean;
     } = {};
 
-    if (body.theme !== undefined) {
-      if (!VALID_THEMES.includes(body.theme)) {
+    if (input.theme !== undefined) {
+      if (
+        typeof input.theme !== "string" ||
+        !VALID_THEMES.includes(input.theme as Theme)
+      ) {
         return NextResponse.json({ error: "Invalid theme" }, { status: 400 });
       }
 
-      data.theme = body.theme;
+      data.theme = input.theme as Theme;
     }
 
-    if (body.orderNotifications !== undefined) {
-      if (typeof body.orderNotifications !== "boolean") {
+    if (input.orderNotifications !== undefined) {
+      if (typeof input.orderNotifications !== "boolean") {
         return NextResponse.json(
           { error: "Invalid order notification value" },
           { status: 400 },
         );
       }
 
-      data.orderNotifications = body.orderNotifications;
+      data.orderNotifications = input.orderNotifications;
     }
 
-    if (body.deliveryNotifications !== undefined) {
-      if (typeof body.deliveryNotifications !== "boolean") {
+    if (input.deliveryNotifications !== undefined) {
+      if (typeof input.deliveryNotifications !== "boolean") {
         return NextResponse.json(
-          {
-            error: "Invalid delivery notification value",
-          },
+          { error: "Invalid delivery notification value" },
           { status: 400 },
         );
       }
 
-      data.deliveryNotifications = body.deliveryNotifications;
+      data.deliveryNotifications = input.deliveryNotifications;
     }
 
-    if (body.promotionalNotifications !== undefined) {
-      if (typeof body.promotionalNotifications !== "boolean") {
+    if (input.promotionalNotifications !== undefined) {
+      if (typeof input.promotionalNotifications !== "boolean") {
         return NextResponse.json(
-          {
-            error: "Invalid promotional notification value",
-          },
+          { error: "Invalid promotional notification value" },
           { status: 400 },
         );
       }
 
-      data.promotionalNotifications = body.promotionalNotifications;
+      data.promotionalNotifications = input.promotionalNotifications;
+    }
+
+    if (input.notificationSounds !== undefined) {
+      if (typeof input.notificationSounds !== "boolean") {
+        return NextResponse.json(
+          { error: "Invalid notification sound preference" },
+          { status: 400 },
+        );
+      }
+
+      data.notificationSounds = input.notificationSounds;
     }
 
     const settings = await prisma.user.update({
@@ -104,6 +125,7 @@ export async function PATCH(request: Request) {
         orderNotifications: true,
         deliveryNotifications: true,
         promotionalNotifications: true,
+        notificationSounds: true,
       },
     });
 

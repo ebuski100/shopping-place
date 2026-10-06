@@ -5,13 +5,13 @@ import { Toaster } from "sonner";
 import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
-
+import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "ecommerce app",
   description: "A MarketPlace made available for both buyers and Sellers",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="antialiased">
       <body className="min-h-full flex w-full max-w-7xl flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-white">

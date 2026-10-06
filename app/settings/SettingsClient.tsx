@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  playNotificationSound,
+  type NotificationSound,
+} from "@/lib/notification-sounds";
 
 type Theme = "light" | "dark" | "system";
 
@@ -9,6 +13,7 @@ type Settings = {
   orderNotifications: boolean;
   deliveryNotifications: boolean;
   promotionalNotifications: boolean;
+  notificationSounds: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -16,6 +21,7 @@ const DEFAULT_SETTINGS: Settings = {
   orderNotifications: true,
   deliveryNotifications: true,
   promotionalNotifications: true,
+  notificationSounds: true,
 };
 
 export default function SettingsClient() {
@@ -24,11 +30,15 @@ export default function SettingsClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [previewingSound, setPreviewingSound] =
+    useState<NotificationSound | null>(null);
 
   useEffect(() => {
     async function loadSettings() {
       try {
-        const response = await fetch("/api/settings", { cache: "no-store" });
+        const response = await fetch("/api/settings", {
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           throw new Error("Failed to load settings");
@@ -109,6 +119,14 @@ export default function SettingsClient() {
         applyTheme(savedSettings.theme);
         localStorage.setItem("theme", savedSettings.theme);
       }
+
+      if (updates.notificationSounds !== undefined) {
+        window.dispatchEvent(
+          new CustomEvent("notification-sounds-preference-change", {
+            detail: savedSettings.notificationSounds,
+          }),
+        );
+      }
     } catch (error) {
       console.error("Error updating settings:", error);
 
@@ -119,10 +137,32 @@ export default function SettingsClient() {
         localStorage.setItem("theme", previousSettings.theme);
       }
 
+      if (updates.notificationSounds !== undefined) {
+        window.dispatchEvent(
+          new CustomEvent("notification-sounds-preference-change", {
+            detail: previousSettings.notificationSounds,
+          }),
+        );
+      }
+
       setError("Unable to save your setting. Please try again.");
     } finally {
       setSaving(false);
     }
+  }
+
+  function previewSound(sound: NotificationSound) {
+    if (!settings.notificationSounds) {
+      return;
+    }
+
+    setPreviewingSound(sound);
+
+    playNotificationSound(sound);
+
+    window.setTimeout(() => {
+      setPreviewingSound(null);
+    }, 1200);
   }
 
   if (loading) {
@@ -144,7 +184,7 @@ export default function SettingsClient() {
       )}
 
       {/* Appearance */}
-      <section className="rounded-xl border bg-white dark:bg-gray-900 p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
         <div className="mb-5">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Appearance
@@ -172,7 +212,7 @@ export default function SettingsClient() {
                 theme: event.target.value as Theme,
               })
             }
-            className="w-full rounded-lg border bg-white dark:bg-gray-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-black sm:max-w-sm"
+            className="w-full rounded-lg border bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-black dark:bg-gray-900 sm:max-w-sm"
           >
             <option value="system">System default</option>
 
@@ -184,7 +224,7 @@ export default function SettingsClient() {
       </section>
 
       {/* Notifications */}
-      <section className="rounded-xl border bg-white dark:bg-gray-900 p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
         <div className="mb-5">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Notifications
@@ -233,6 +273,76 @@ export default function SettingsClient() {
           />
         </div>
       </section>
+
+      {/* Notification Sounds */}
+      <section className="rounded-xl border bg-white p-6 shadow-sm dark:bg-gray-900">
+        <div className="mb-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Notification Sounds
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Control sounds played when new notifications arrive.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <NotificationToggle
+            title="Notification sounds"
+            description="Play a sound when a new notification arrives."
+            enabled={settings.notificationSounds}
+            disabled={saving}
+            onChange={(enabled) =>
+              updateSetting({
+                notificationSounds: enabled,
+              })
+            }
+          />
+
+          <div
+            className={`space-y-3 border-t pt-5 ${
+              !settings.notificationSounds ? "opacity-50" : ""
+            }`}
+          >
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                Sound previews
+              </h3>
+
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Test each sound before enabling notifications.
+              </p>
+            </div>
+
+            <SoundPreviewButton
+              title="General notification"
+              description="Used for ordinary order and delivery updates."
+              sound="general"
+              disabled={!settings.notificationSounds || saving}
+              previewing={previewingSound === "general"}
+              onPreview={previewSound}
+            />
+
+            <SoundPreviewButton
+              title="Error notification"
+              description="Used for failed, declined, or rejected events."
+              sound="error"
+              disabled={!settings.notificationSounds || saving}
+              previewing={previewingSound === "error"}
+              onPreview={previewSound}
+            />
+
+            <SoundPreviewButton
+              title="Successful payment"
+              description="Used when a payment is successfully confirmed."
+              sound="paymentSuccess"
+              disabled={!settings.notificationSounds || saving}
+              previewing={previewingSound === "paymentSuccess"}
+              onPreview={previewSound}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -279,6 +389,47 @@ function NotificationToggle({
             enabled ? "left-6" : "left-1"
           }`}
         />
+      </button>
+    </div>
+  );
+}
+
+type SoundPreviewButtonProps = {
+  title: string;
+  description: string;
+  sound: NotificationSound;
+  disabled: boolean;
+  previewing: boolean;
+  onPreview: (sound: NotificationSound) => void;
+};
+
+function SoundPreviewButton({
+  title,
+  description,
+  sound,
+  disabled,
+  previewing,
+  onPreview,
+}: SoundPreviewButtonProps) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-lg border p-4 dark:border-gray-700">
+      <div>
+        <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+          {title}
+        </h4>
+
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => onPreview(sound)}
+        className="shrink-0 rounded-lg border px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+      >
+        {previewing ? "Playing..." : "Preview"}
       </button>
     </div>
   );
