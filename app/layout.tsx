@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 
@@ -7,8 +7,26 @@ import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
 import type { ReactNode } from "react";
 export const metadata: Metadata = {
-  title: "ecommerce app",
-  description: "A MarketPlace made available for both buyers and Sellers",
+  title: "Shopping Place",
+  description: "Shop products online with Shopping Place.",
+  icons: {
+    apple: [
+      {
+        url: "/icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Shopping Place",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16a34a",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
