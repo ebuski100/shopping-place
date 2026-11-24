@@ -24,7 +24,9 @@ function getPrisma(): PrismaClient {
   if (!pool) {
     pool = new Pool({
       connectionString,
-      max: 2,
+      // Each warm Vercel instance gets its own pool; keep its footprint small
+      // when many instances share Supabase's transaction pooler.
+      max: 1,
       connectionTimeoutMillis: 5000,
       idleTimeoutMillis: 30000,
       allowExitOnIdle: true,
