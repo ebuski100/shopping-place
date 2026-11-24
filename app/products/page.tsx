@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/products";
+import PublicCatalogSnapshot from "@/components/PublicCatalogSnapshot";
 
 type ProductsPageProps = {
   searchParams: Promise<{
@@ -49,6 +50,20 @@ export default async function ProductsPage({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-15 pl-40 lg:pl-65 sm:pl-55">
       <Header />
+
+      <PublicCatalogSnapshot
+        products={products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          image: product.image,
+          category: product.category,
+          stock: product.stock,
+          updatedAt: product.updatedAt.toISOString(),
+        }))}
+        listingQuery={{ search, category, sort }}
+      />
 
       <div className="flex min-h-[calc(100vh-80px)]">
         {/* CATEGORY SIDEBAR */}

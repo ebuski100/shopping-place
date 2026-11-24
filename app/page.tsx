@@ -5,6 +5,7 @@ import PromoCarousel from "@/components/PromoCarousel";
 import TodaysDeals from "@/components/TodaysDeals";
 import MoreToLove from "@/components/MoreToLove";
 import { InstallAppButton } from "@/components/PwaInstall";
+import PublicCatalogSnapshot from "@/components/PublicCatalogSnapshot";
 import { getProducts } from "@/lib/products";
 
 // Preserve the previous no-store/dynamic rendering behavior now that the
@@ -17,6 +18,23 @@ export default async function HomePage() {
   return (
     <main className="py-8 pb-15 pt-20">
       <Header />
+
+      <PublicCatalogSnapshot
+        products={products
+          .filter((product) => product.isActive && product.stock > 0)
+          .slice(0, 8)
+          .map((product) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            image: product.image,
+            category: product.category,
+            stock: product.stock,
+            updatedAt: product.updatedAt.toISOString(),
+          }))}
+        listingQuery="home"
+      />
 
       <PromoCarousel />
 

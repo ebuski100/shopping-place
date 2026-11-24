@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductDetails from "./ProductDetails";
+import PublicCatalogSnapshot from "@/components/PublicCatalogSnapshot";
 
 type ProductPageProps = {
   params: Promise<{
@@ -28,5 +29,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  return <ProductDetails product={product} />;
+  return (
+    <>
+      <PublicCatalogSnapshot
+        products={[
+          {
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            image: product.image,
+            category: product.category,
+            stock: product.stock,
+            updatedAt: product.updatedAt.toISOString(),
+          },
+        ]}
+      />
+      <ProductDetails product={product} />
+    </>
+  );
 }
