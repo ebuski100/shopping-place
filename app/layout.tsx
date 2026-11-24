@@ -6,6 +6,7 @@ import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
 import { PwaInstallProvider } from "@/components/PwaInstall";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Shopping Place",
@@ -39,6 +40,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <WishlistInitializer />
 
         <ThemeInitializer />
+
+        <ServiceWorkerRegistration />
 
         <PwaInstallProvider>{children}</PwaInstallProvider>
 

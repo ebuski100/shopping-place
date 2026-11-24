@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#16a34a" />
+    <title>You're offline | Shopping Place</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f9fafb;
+        color: #111827;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        padding: 24px;
+        place-items: center;
+      }
+
+      main {
+        width: min(100%, 480px);
+        padding: 36px 28px;
+        border: 1px solid #e5e7eb;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 40px rgb(17 24 39 / 8%);
+        text-align: center;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+        color: #15803d;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .brand img { width: 36px; height: 36px; object-fit: contain; }
+
+      .status {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: #fef3c7;
+        color: #92400e;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      h1 { margin: 18px 0 10px; font-size: clamp(26px, 7vw, 34px); }
+
+      p { margin: 0; color: #4b5563; font-size: 15px; line-height: 1.7; }
+
+      button {
+        min-height: 46px;
+        margin-top: 26px;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 12px;
+        background: #16a34a;
+        color: #fff;
+        cursor: pointer;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      button:hover { background: #15803d; }
+      button:focus-visible { outline: 3px solid #86efac; outline-offset: 3px; }
+
+      html.dark { background: #030712; color: #f9fafb; }
+      html.dark main { border-color: #1f2937; background: #111827; }
+      html.dark p { color: #d1d5db; }
+
+      @media (prefers-color-scheme: dark) {
+        html:not(.light) { background: #030712; color: #f9fafb; }
+        html:not(.light) main { border-color: #1f2937; background: #111827; }
+        html:not(.light) p { color: #d1d5db; }
+      }
+
+      @media (max-width: 420px) {
+        body { padding: 16px; }
+        main { padding: 30px 20px; }
+      }
+    </style>
+    <script>
+      try {
+        const savedTheme = localStorage.getItem("theme");
+        const dark = savedTheme === "dark" ||
+          (savedTheme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.classList.toggle("light", savedTheme === "light");
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <main>
+      <div class="brand">
+        <img src="/shopping-bag.png" width="36" height="36" alt="" />
+        <span>Shopping Place</span>
+      </div>
+      <div class="status">Connection unavailable</div>
+      <h1>You're offline</h1>
+      <p>
+        Shopping Place couldn't connect to the internet. Live products, your
+        cart, account, orders, and payments aren't available here. Reconnect
+        and try again.
+      </p>
+      <button type="button" onclick="window.location.reload()">Try again</button>
+    </main>
+  </body>
+</html>
