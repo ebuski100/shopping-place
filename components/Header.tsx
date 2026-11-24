@@ -16,6 +16,7 @@ import {
   LogOut,
   ChevronDown,
   Settings,
+  ShieldCheck,
   Menu,
   X,
 } from "lucide-react";
@@ -204,6 +205,13 @@ export default function Header() {
                 <UserPlus size={18} />
                 Register
               </Link>
+              <Link
+                href="/login?redirect=/admin"
+                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+              >
+                <ShieldCheck size={18} />
+                Admin Dashboard
+              </Link>
             </>
           )}
 
@@ -278,6 +286,16 @@ export default function Header() {
                       className="flex items-center rounded-lg px-3 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                     >
                       Disputes & Reports
+                    </Link>
+
+                    <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
+
+                    <Link
+                      href="/login?redirect=/admin"
+                      className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                    >
+                      <ShieldCheck size={17} />
+                      Admin Dashboard
                     </Link>
                   </nav>
 
@@ -412,6 +430,14 @@ export default function Header() {
               className="flex items-center gap-2  text-gray-600 dark:text-gray-300 mt-3 transition hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-xl"
             >
               Disputes & Reports
+            </Link>
+            <Link
+              href="/login?redirect=/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-2 flex items-center gap-2 border-t border-gray-200 px-2 pt-4 text-sm font-medium text-gray-700 transition hover:text-green-700 dark:border-gray-700 dark:text-gray-200 dark:hover:text-green-400"
+            >
+              <ShieldCheck size={18} />
+              Admin Dashboard
             </Link>
           </div>
         </>
