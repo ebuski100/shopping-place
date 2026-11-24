@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import PromoCarousel from "@/components/PromoCarousel";
 import TodaysDeals from "@/components/TodaysDeals";
 import MoreToLove from "@/components/MoreToLove";
+import { InstallAppButton } from "@/components/PwaInstall";
 import { getProducts } from "@/lib/products";
 
 // Preserve the previous no-store/dynamic rendering behavior now that the
@@ -18,6 +19,10 @@ export default async function HomePage() {
       <Header />
 
       <PromoCarousel />
+
+      <div className="mx-auto flex w-full max-w-7xl justify-center px-4 py-2">
+        <InstallAppButton />
+      </div>
 
       <TodaysDeals products={products} />
 

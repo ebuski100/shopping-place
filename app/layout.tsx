@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
+import { PwaInstallProvider } from "@/components/PwaInstall";
 import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Shopping Place",
@@ -39,7 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         <ThemeInitializer />
 
-        {children}
+        <PwaInstallProvider>{children}</PwaInstallProvider>
 
         <Toaster position="bottom-left" richColors closeButton />
       </body>

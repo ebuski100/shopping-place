@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/useCartStore";
+import { InstallAppButton } from "@/components/PwaInstall";
 type User = {
   id: number;
   name: string;
@@ -424,6 +425,10 @@ export default function Header() {
             >
               Disputes & Reports
             </Link>
+            <InstallAppButton
+              variant="menu"
+              onClick={() => setMobileMenuOpen(false)}
+            />
             {!loading && user && (
               <Link
                 href="/admin-entry"
