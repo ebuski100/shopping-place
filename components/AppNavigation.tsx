@@ -251,10 +251,10 @@ export function AppNavigationProvider({ children }: { children: React.ReactNode 
       <Modal
         open={exitDialogOpen}
         onClose={stayInApp}
-        title="Exit Shopping Place?"
+        title="Do you want to exit Shopping Place?"
       >
         <div className="space-y-5 text-sm text-gray-700 dark:text-gray-300">
-          <p>Do you want to exit Shopping Place?</p>
+          <p>Are you sure you want to leave? You can always come back and continue shopping.</p>
           {closeBlocked && (
             <p role="status" className="rounded-lg bg-gray-100 p-3 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
               This browser did not allow the app to close. You can close Shopping Place using your device&apos;s normal app controls.
@@ -275,7 +275,7 @@ export function AppNavigationProvider({ children }: { children: React.ReactNode 
               aria-busy={exitAttempted && !closeBlocked}
               className="rounded-lg bg-green-600 px-4 py-2.5 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {exitAttempted ? "Exit requested" : "Exit"}
+              {exitAttempted ? "Exit requested" : "Exit app"}
             </button>
           </div>
         </div>
