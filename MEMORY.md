@@ -1,0 +1,4 @@
+- [Prisma connection pooling](lib/prisma.ts) — global pg Pool reuse per warm serverless instance, max 2, timeouts configured
+- [Shared product data access](lib/products.ts) — centralized getProducts/normalizeSort used by page and API route
+- [Error boundary](app/global-error.tsx) — root layout error handling with recovery
+- [Removed self-fetch](app/products/page.tsx) — direct imports instead of HTTP round-trip via NEXT_PUBLIC_APP_URL

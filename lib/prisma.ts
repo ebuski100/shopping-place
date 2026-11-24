@@ -1,39 +1,56 @@
 import { PrismaClient } from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const connectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not defined");
-}
+// Keep a single PrismaClient per warm serverless instance.
+// Node.js module caching ensures this evaluates once per container start.
+// The pg.Pool is created lazily so module evaluation succeeds even when
+// DATABASE_URL is not yet available (e.g., during build-time page collection).
+let pool: Pool | undefined;
+let adapter: import("@prisma/adapter-pg").PrismaPg | undefined;
+let prismaClient: PrismaClient | undefined;
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+function getPrisma(): PrismaClient {
+  if (prismaClient) {
+    return prismaClient;
+  }
 
-function createPrismaClient() {
-  const adapter = new PrismaPg(connectionString as string, {
-    onPoolError: (err) => {
-      console.error("Prisma pool error:", err);
-    },
-    onConnectionError: (err) => {
-      console.error("Prisma connection error:", err);
-    },
-  });
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not defined");
+  }
 
-  return new PrismaClient({
+  if (!pool) {
+    pool = new Pool({
+      connectionString,
+      max: 2,
+      connectionTimeoutMillis: 5000,
+      idleTimeoutMillis: 30000,
+      allowExitOnIdle: true,
+    });
+  }
+
+  if (!adapter) {
+    adapter = new PrismaPg(pool, {
+      onPoolError: (err) => {
+        console.error("Prisma pool error:", err);
+      },
+      onConnectionError: (err) => {
+        console.error("Prisma connection error:", err);
+      },
+    });
+  }
+
+  prismaClient = new PrismaClient({
     adapter,
     log:
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
         : ["error"],
   });
+
+  return prismaClient;
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-// Reuse the same client across hot reloads in dev AND across serverless
-// invocations in production to avoid exhausting the database connection pool.
-if (!globalForPrisma.prisma) {
-  globalForPrisma.prisma = prisma;
-}
+export const prisma = getPrisma();

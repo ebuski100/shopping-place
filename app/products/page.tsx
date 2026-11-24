@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { Product } from "@/types/product";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { getProducts } from "@/lib/products";
 
 type ProductsPageProps = {
   searchParams: Promise<{
@@ -12,39 +12,6 @@ type ProductsPageProps = {
     sort?: string;
   }>;
 };
-
-async function getProducts(
-  search: string,
-  category: string,
-  sort: string,
-): Promise<Product[]> {
-  const params = new URLSearchParams();
-
-  if (search) {
-    params.set("search", search);
-  }
-
-  if (category) {
-    params.set("category", category);
-  }
-
-  if (sort) {
-    params.set("sort", sort);
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/products?${params.toString()}`,
-    {
-      cache: "no-store",
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch products");
-  }
-
-  return response.json();
-}
 
 function createCategoryUrl(category: string, search: string) {
   const params = new URLSearchParams();
@@ -71,9 +38,9 @@ export default async function ProductsPage({
   const category = params.category?.trim() ?? "";
   const sort = params.sort?.trim() ?? "newest";
 
-  const products = await getProducts(search, category, sort);
+  const products = await getProducts({ search, category, sort });
 
-  const allProducts = await getProducts("", "", "newest");
+  const allProducts = await getProducts({});
 
   const categories = [
     ...new Set(allProducts.map((product) => product.category)),
