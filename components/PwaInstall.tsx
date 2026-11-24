@@ -24,6 +24,7 @@ interface DeferredInstallPrompt extends Event {
 
 type PwaInstallContextValue = {
   canInstall: boolean;
+  isPrompting: boolean;
   supportsIOSSafariInstructions: boolean;
   showInstallExperience: () => void;
   installApp: () => Promise<void>;
@@ -82,6 +83,7 @@ export function PwaInstallProvider({
   children: React.ReactNode;
 }) {
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isPrompting, setIsPrompting] = useState(false);
   const [deferredPrompt, setDeferredPrompt] =
     useState<DeferredInstallPrompt | null>(null);
   const [isIOSInstructionsOpen, setIsIOSInstructionsOpen] = useState(false);
@@ -144,6 +146,7 @@ export function PwaInstallProvider({
 
   const installApp = useCallback(async () => {
     if (deferredPrompt) {
+      setIsPrompting(true);
       try {
         await deferredPrompt.prompt();
         const choice = await deferredPrompt.userChoice;
@@ -155,6 +158,7 @@ export function PwaInstallProvider({
       } finally {
         // A prompt event can only be used once, whether accepted or dismissed.
         setDeferredPrompt(null);
+        setIsPrompting(false);
       }
 
       return;
@@ -183,6 +187,7 @@ export function PwaInstallProvider({
     <PwaInstallContext.Provider
       value={{
         canInstall,
+        isPrompting,
         supportsIOSSafariInstructions,
         showInstallExperience,
         installApp,
@@ -245,10 +250,16 @@ export function InstallAppButton({
       <button
         type="button"
         onClick={handleClick}
+        disabled={installContext.isPrompting}
+        aria-busy={installContext.isPrompting}
         className="mt-2 flex w-full items-center gap-2 border-t border-gray-200 px-2 pt-4 text-left text-sm font-medium text-green-700 transition hover:text-green-800 dark:border-gray-700 dark:text-green-400 dark:hover:text-green-300"
       >
-        <Download size={18} />
-        Install Shopping Place
+        {installContext.isPrompting ? (
+          <span className="h-[18px] w-[18px] animate-spin rounded-full border-2 border-green-300 border-t-green-700 dark:border-green-800 dark:border-t-green-300" />
+        ) : (
+          <Download size={18} />
+        )}
+        {installContext.isPrompting ? "Opening install prompt…" : "Install Shopping Place"}
       </button>
     );
   }
@@ -257,10 +268,16 @@ export function InstallAppButton({
     <button
       type="button"
       onClick={handleClick}
+      disabled={installContext.isPrompting}
+      aria-busy={installContext.isPrompting}
       className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950"
     >
-      <Download size={18} />
-      Install Shopping Place
+      {installContext.isPrompting ? (
+        <span className="h-[18px] w-[18px] animate-spin rounded-full border-2 border-green-300 border-t-white" />
+      ) : (
+        <Download size={18} />
+      )}
+      {installContext.isPrompting ? "Opening install prompt…" : "Install Shopping Place"}
     </button>
   );
 }

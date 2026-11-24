@@ -428,6 +428,7 @@ export default function CheckoutClient({ cart }: CheckoutClientProps) {
                   type="button"
                   onClick={handleContinueToPayment}
                   disabled={loading || !selectedAddress}
+                  aria-busy={loading}
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-black px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-gray-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                 >
                   {loading ? (

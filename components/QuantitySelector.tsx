@@ -30,7 +30,7 @@ const QuantitySelector = ({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center" aria-busy={disabled}>
       <div className="flex w-fit items-center overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <button
           type="button"

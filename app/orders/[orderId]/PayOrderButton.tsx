@@ -51,6 +51,7 @@ export default function PayOrderButton({ orderId }: PayOrderButtonProps) {
         type="button"
         onClick={handlePayment}
         disabled={loading}
+        aria-busy={loading}
         className="w-full rounded-lg bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? "Redirecting to payment..." : "Pay Now"}

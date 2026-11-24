@@ -139,6 +139,7 @@ export default function StatusUpdater({
         type="button"
         onClick={updateStatus}
         disabled={loading || status === currentStatus}
+        aria-busy={loading}
         className="rounded-md bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
       >
         {loading ? "Updating..." : "Update Status"}

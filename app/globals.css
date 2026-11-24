@@ -2,6 +2,36 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    transition-property: transform, scale, color, background-color, border-color,
+      box-shadow, opacity;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    scale: 0.98;
+  }
+
+  a[href] {
+    transition-property: color, background-color, border-color, box-shadow, scale;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+  }
+
+  a[href]:active {
+    scale: 0.99;
+  }
+
+  :where(button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 3px;
+  }
+}
+
 @keyframes wishlist-pop {
   0% {
     transform: scale(1);
@@ -22,6 +52,24 @@
 
 .wishlist-pop {
   animation: wishlist-pop 300ms ease-out;
+}
+
+@keyframes modal-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-content-enter {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-backdrop-enter {
+  animation: modal-backdrop-enter 160ms ease-out both;
+}
+
+.modal-content-enter {
+  animation: modal-content-enter 180ms ease-out both;
 }
 
 @keyframes cart-pop {
@@ -57,4 +105,15 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

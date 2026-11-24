@@ -100,6 +100,7 @@ export default function WishlistButton({ product }: WishlistButtonProps) {
       onClick={handleWishlist}
       disabled={loading || !initialized}
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+      aria-busy={loading || !initialized}
       className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md backdrop-blur transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-black md:h-10 md:w-10"
     >
       {loading || !initialized ? (

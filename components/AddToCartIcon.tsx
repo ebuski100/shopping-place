@@ -59,6 +59,7 @@ export default function AddToCartIcon({ product }: AddToCartIconProps) {
       onClick={handleAddToCart}
       disabled={loading || product.stock <= 0}
       aria-label={`Add ${product.name} to cart`}
+      aria-busy={loading}
       className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-transform duration-150 hover:scale-105 active:scale-90 disabled:cursor-not-allowed disabled:opacity-70 md:h-10 md:w-10"
     >
       {loading ? (

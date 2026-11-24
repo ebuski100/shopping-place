@@ -636,6 +636,7 @@ export default function CartClient({
                 type="button"
                 onClick={() => openRemoveModal("user", item.id)}
                 disabled={isLoading}
+                aria-busy={isLoading}
                 className="text-sm text-red-500 hover:underline disabled:opacity-50"
               >
                 {isLoading ? "Updating..." : "Remove"}
@@ -755,6 +756,7 @@ function RemoveItemModal({
             type="button"
             onClick={onConfirm}
             disabled={loading}
+            aria-busy={loading}
             className="rounded-md bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Removing..." : "Remove"}

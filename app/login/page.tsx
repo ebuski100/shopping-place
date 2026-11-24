@@ -92,7 +92,7 @@ export default function LoginPage() {
 
       {/* Login Card */}
       <div className="w-full max-w-md rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/30 p-8 shadow-xs">
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} aria-busy={loading || socialLoading !== null} className="space-y-5">
           {/* Email */}
           <div>
             <label htmlFor="email" className="mb-2 block font-medium">
@@ -146,6 +146,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
             className="flex w-full items-center justify-center gap-2 rounded-md bg-black py-3 font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {loading ? (
@@ -173,6 +174,7 @@ export default function LoginPage() {
           <button
             type="button"
             disabled={socialLoading !== null}
+            aria-busy={socialLoading === "google"}
             onClick={() => {
               setSocialLoading("google");
               window.location.href = "/api/auth/google";
@@ -195,6 +197,7 @@ export default function LoginPage() {
           <button
             type="button"
             disabled={socialLoading !== null}
+            aria-busy={socialLoading === "github"}
             onClick={() => {
               setSocialLoading("github");
               window.location.href = "/api/auth/github";

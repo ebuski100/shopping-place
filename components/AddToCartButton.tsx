@@ -66,6 +66,7 @@ export default function AddToCartButton({
       type="button"
       onClick={handleAddToCart}
       disabled={product.stock <= 0 || authLoading || loading}
+      aria-busy={authLoading || loading}
       className="w-full rounded-xl bg-black px-6 py-4 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {product.stock <= 0

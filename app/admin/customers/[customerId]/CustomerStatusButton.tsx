@@ -64,6 +64,7 @@ export default function CustomerStatusButton({
         type="button"
         onClick={handleStatusChange}
         disabled={loading}
+        aria-busy={loading}
         className={`rounded-md px-5 py-3 text-sm font-medium text-white transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${
           isActive
             ? "bg-red-600 hover:bg-red-700"
