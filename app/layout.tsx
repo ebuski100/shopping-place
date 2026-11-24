@@ -12,6 +12,13 @@ export const metadata: Metadata = {
   title: "Shopping Place",
   description: "Shop products online with Shopping Place.",
   icons: {
+    icon: [
+      {
+        url: "/icon.png",
+        sizes: "64x64",
+        type: "image/png",
+      },
+    ],
     apple: [
       {
         url: "/icons/apple-touch-icon.png",
