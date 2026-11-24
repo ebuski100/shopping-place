@@ -5,6 +5,13 @@ import { Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useWishlistStore } from "@/lib/store/useWishlistStore";
+import { useStoreCounts } from "@/lib/store/useStoreCounts";
+import {
+  getGuestCartMergeNotice,
+  getGuestCartQuantity,
+  mergeGuestCart,
+} from "@/lib/guestCart";
+import { toast } from "sonner";
 
 import { useEffect, useState, useRef } from "react";
 import {
@@ -20,7 +27,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useCartStore } from "@/lib/store/useCartStore";
 import { InstallAppButton } from "@/components/PwaInstall";
 type User = {
   id: number;
@@ -47,33 +53,64 @@ export default function Header() {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const wishlistItems = useWishlistStore((state) => state.items);
-  const cartItems = useCartStore((state) => state.items);
+  const cartCount = useStoreCounts((state) => state.cartCount);
+  const setCartCount = useStoreCounts((state) => state.setCartCount);
+  const loadCartCount = useStoreCounts((state) => state.loadCartCount);
   const pathname = usePathname();
 
   const isProductsPage = pathname === "/products";
 
   useEffect(() => {
+    let active = true;
+
     async function getUser() {
       try {
-        const response = await fetch("/api/auth/me");
+        const response = await fetch("/api/auth/me", { cache: "no-store" });
 
         if (!response.ok) {
-          setUser(null);
+          if (active) {
+            setUser(null);
+            setCartCount(getGuestCartQuantity());
+          }
           return;
         }
 
         const data = await response.json();
+        if (!active) return;
         setUser(data.user);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        setUser(null);
+
+        if (data.user) {
+          try {
+            const outcomes = await mergeGuestCart();
+            const notice = getGuestCartMergeNotice(outcomes);
+            if (notice) toast.warning(notice);
+          } catch {
+            toast.warning(
+              "Your saved cart is still on this device. Reconciliation will be retried when you reconnect.",
+            );
+          }
+          await loadCartCount();
+        } else {
+          setCartCount(getGuestCartQuantity());
+        }
+      } catch {
+        if (active) {
+          setUser(null);
+          setCartCount(getGuestCartQuantity());
+        }
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     getUser();
-  }, []);
+
+    window.addEventListener("online", getUser);
+    return () => {
+      active = false;
+      window.removeEventListener("online", getUser);
+    };
+  }, [loadCartCount, setCartCount]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -105,6 +142,7 @@ export default function Header() {
       }
 
       setUser(null);
+      setCartCount(getGuestCartQuantity());
       setMobileMenuOpen(false);
 
       window.location.href = "/";
@@ -181,9 +219,9 @@ export default function Header() {
             >
               <ShoppingCart size={22} />
 
-              {cartItems.length > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-green-600 px-1 text-[10px] font-bold text-white">
-                  {cartItems.length > 99 ? "99+" : cartItems.length}
+                  {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
             </Link>

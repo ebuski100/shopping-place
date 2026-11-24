@@ -89,7 +89,8 @@ type AddProductToCartResult =
     }
   | {
       authenticated: false;
-      items: ReturnType<typeof addToGuestCart>;
+      items: Awaited<ReturnType<typeof addToGuestCart>>;
+      offline: boolean;
     };
 
 export async function addProductToCart(
@@ -104,16 +105,32 @@ export async function addProductToCart(
     throw new Error("Invalid quantity");
   }
 
-  const response = await fetch("/api/cart", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      productId: product.id,
-      quantity,
-    }),
-  });
+  // Do not send an operation that could have committed without a response.
+  // Offline additions are explicitly local and are reconciled after reconnect.
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    const items = await addToGuestCart(product, quantity);
+    syncGuestCartCount();
+    notifyCartUpdated();
+    return { authenticated: false, items, offline: true };
+  }
+
+  let response: Response;
+  try {
+    response = await fetch("/api/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: product.id,
+        quantity,
+      }),
+    });
+  } catch {
+    throw new Error(
+      "The cart update could not be confirmed. Check your cart before trying again.",
+    );
+  }
 
   /*
    * Guest user.
@@ -122,7 +139,7 @@ export async function addProductToCart(
    * we should use the browser cart instead.
    */
   if (response.status === 401) {
-    const items = addToGuestCart(product, quantity);
+    const items = await addToGuestCart(product, quantity);
 
     syncGuestCartCount();
 
@@ -132,6 +149,7 @@ export async function addProductToCart(
     return {
       authenticated: false,
       items,
+      offline: false,
     };
   }
 

@@ -1,8 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { useStoreCounts } from "@/lib/store/useStoreCounts";
 import { subscribeToCartUpdates } from "@/lib/cartEvents";
@@ -12,6 +19,8 @@ import type { GuestCartItem } from "@/lib/guestCart";
 
 import {
   getGuestCart,
+  getGuestCartMergeNotice,
+  mergeGuestCart,
   updateGuestCartQuantity,
   removeFromGuestCart,
 } from "@/lib/guestCart";
@@ -26,6 +35,19 @@ type CartClientProps = {
   isAuthenticated: boolean;
 };
 
+function subscribeToConnectivity(callback: () => void) {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+}
+
+function getConnectivitySnapshot() {
+  return navigator.onLine;
+}
+
 export default function CartClient({
   initialCart,
   isAuthenticated,
@@ -33,6 +55,7 @@ export default function CartClient({
   const router = useRouter();
 
   const { isAuthenticated: currentAuth, loading: authLoading } = useAuth();
+  const authenticated = isAuthenticated || currentAuth;
 
   // ---------------------------------------
   // Zustand store
@@ -41,6 +64,11 @@ export default function CartClient({
   const setCartCount = useStoreCounts((state) => state.setCartCount);
 
   const loadCartCount = useStoreCounts((state) => state.loadCartCount);
+  const isOnline = useSyncExternalStore(
+    subscribeToConnectivity,
+    getConnectivitySnapshot,
+    () => true,
+  );
 
   // ---------------------------------------
   // Local state
@@ -55,6 +83,7 @@ export default function CartClient({
   const [guestItems, setGuestItems] = useState<GuestCartItem[]>(() =>
     getGuestCart(),
   );
+  const wasOnline = useRef(isOnline);
 
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
 
@@ -67,11 +96,11 @@ export default function CartClient({
   // Refresh cart from storage / database
   // ---------------------------------------
 
-  async function refreshCart() {
+  const refreshCart = useCallback(async () => {
     /*
      * Guest cart
      */
-    if (!currentAuth) {
+    if (!authenticated) {
       const updatedGuestItems = getGuestCart();
 
       setGuestItems(updatedGuestItems);
@@ -109,17 +138,55 @@ export default function CartClient({
        */
       await loadCartCount();
     }
-  }
+  }, [authenticated, loadCartCount, setCartCount]);
 
   // ---------------------------------------
   // Listen for cart changes from elsewhere
   // ---------------------------------------
 
   useEffect(() => {
-    return subscribeToCartUpdates(() => {
+    if (!wasOnline.current && isOnline && guestItems.length > 0) {
+      toast.info(
+        authenticated
+          ? "You are back online. Your saved items are being reconciled with your account cart."
+          : "You are back online. Your guest cart remains on this device until you sign in to reconcile it.",
+      );
+    }
+    wasOnline.current = isOnline;
+  }, [authenticated, guestItems.length, isOnline]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToCartUpdates(() => {
       void refreshCart();
     });
-  }, [currentAuth]);
+    return () => {
+      unsubscribe();
+    };
+  }, [authenticated, refreshCart]);
+
+  useEffect(() => {
+    if (!authenticated || authLoading || !isOnline) return;
+
+    let active = true;
+    void mergeGuestCart()
+      .then((outcomes) => {
+        if (!active) return;
+        const notice = getGuestCartMergeNotice(outcomes);
+        if (notice) toast.warning(notice);
+        return refreshCart();
+      })
+      .catch(() => {
+        if (active) {
+          toast.warning(
+            "Your saved cart is still on this device. Reconciliation will be retried when you reconnect.",
+          );
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authenticated, authLoading, isOnline, refreshCart]);
 
   // ---------------------------------------
   // Remove modal
@@ -145,7 +212,7 @@ export default function CartClient({
     if (!itemToRemove) return;
 
     if (itemToRemove.type === "guest") {
-      removeGuestItem(itemToRemove.id);
+      await removeGuestItem(itemToRemove.id);
 
       setRemoveModalOpen(false);
       setItemToRemove(null);
@@ -197,30 +264,32 @@ export default function CartClient({
   // Guest quantity update
   // ---------------------------------------
 
-  function updateGuestQuantity(productId: number, quantity: number) {
-    const currentItem = guestItems.find(
-      (item) => item.product.id === productId,
-    );
-
-    if (!currentItem) return;
-
-    const updatedItems = updateGuestCartQuantity(productId, quantity);
-
-    setGuestItems(updatedItems);
-
-    setCartCount(getGuestCartTotalQuantity(updatedItems));
+  async function updateGuestQuantity(productId: number, quantity: number) {
+    try {
+      const updatedItems = await updateGuestCartQuantity(productId, quantity);
+      setGuestItems(updatedItems);
+      setCartCount(getGuestCartTotalQuantity(updatedItems));
+      if (!isOnline) {
+        toast.info("Quantity saved on this device. Prices and stock are estimates.");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Cart update failed");
+    }
   }
 
   // ---------------------------------------
   // Guest remove
   // ---------------------------------------
 
-  function removeGuestItem(productId: number) {
-    const updatedItems = removeFromGuestCart(productId);
-
-    setGuestItems(updatedItems);
-
-    setCartCount(getGuestCartTotalQuantity(updatedItems));
+  async function removeGuestItem(productId: number) {
+    try {
+      const updatedItems = await removeFromGuestCart(productId);
+      setGuestItems(updatedItems);
+      setCartCount(getGuestCartTotalQuantity(updatedItems));
+      if (!isOnline) toast.info("Item removed from this device's guest cart.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Cart update failed");
+    }
   }
 
   // ---------------------------------------
@@ -371,12 +440,18 @@ export default function CartClient({
   if (!isAuthenticated) {
     if (guestItems.length === 0) {
       return (
-        <p className="text-gray-500 dark:text-gray-400">Your cart is empty.</p>
+        <div className="space-y-4">
+          {!isOnline && (
+            <OfflineGuestCartNotice />
+          )}
+          <p className="text-gray-500 dark:text-gray-400">Your cart is empty.</p>
+        </div>
       );
     }
 
     return (
       <div className="w-full max-w-4xl space-y-6">
+        {!isOnline && <OfflineGuestCartNotice />}
         {guestItems.map((item) => (
           <div key={item.product.id} className="flex gap-6 border-b pb-6">
             {/* Product image */}
@@ -441,11 +516,15 @@ export default function CartClient({
 
         <button
           type="button"
-          disabled={authLoading}
+          disabled={authLoading || !isOnline}
           onClick={() => setAuthPromptOpen(true)}
-          className="w-[70%] rounded-md bg-black py-3 text-white dark:bg-gray-200 dark:text-gray-900 disabled:opacity-50"
+          className="w-[70%] rounded-md bg-black py-3 text-white dark:bg-gray-200 dark:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {authLoading ? "Checking..." : "Proceed to Checkout"}
+          {authLoading
+            ? "Checking..."
+            : isOnline
+              ? "Proceed to Checkout"
+              : "Reconnect to checkout"}
         </button>
 
         <AuthPromptModal
@@ -475,6 +554,7 @@ export default function CartClient({
   if (items.length === 0) {
     return (
       <>
+        {!isOnline && <OfflineGuestCartNotice authenticated />}
         <div className="flex h-80 w-full flex-col items-center justify-center bg-white dark:bg-gray-900">
           <div className="relative h-40 w-40">
             <Image
@@ -508,6 +588,7 @@ export default function CartClient({
 
   return (
     <div className="w-full max-w-4xl space-y-6">
+      {!isOnline && <OfflineGuestCartNotice authenticated />}
       {items.map((item) => {
         const isLoading = loadingItem === item.id;
 
@@ -577,7 +658,7 @@ export default function CartClient({
       <div className="flex w-full items-center justify-center lg:justify-start">
         <button
           type="button"
-          disabled={authLoading}
+          disabled={authLoading || !isOnline}
           onClick={() => {
             if (currentAuth) {
               router.push("/checkout");
@@ -588,7 +669,11 @@ export default function CartClient({
           }}
           className="w-[70%] rounded-md bg-black py-3 text-white disabled:opacity-50 border dark:bg-gray-900 dark:border-gray-300"
         >
-          {authLoading ? "Checking..." : "Proceed to Checkout"}
+          {authLoading
+            ? "Checking..."
+            : isOnline
+              ? "Proceed to Checkout"
+              : "Reconnect to checkout"}
         </button>
       </div>
 
@@ -621,6 +706,19 @@ type RemoveItemModalProps = {
   onConfirm: () => void;
   loading: boolean;
 };
+
+function OfflineGuestCartNotice({ authenticated = false }: { authenticated?: boolean }) {
+  return (
+    <div
+      role="status"
+      className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+    >
+      {authenticated
+        ? "You are offline. Account cart changes and checkout require an internet connection."
+        : "Offline guest cart: items are saved on this device. Prices and stock are estimates; checkout and server reconciliation require an internet connection."}
+    </div>
+  );
+}
 
 function RemoveItemModal({
   onCancel,

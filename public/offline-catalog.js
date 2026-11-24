@@ -9,6 +9,7 @@
   const notice = document.getElementById("notice");
   const connectionStatus = document.getElementById("connection-status");
   const refreshButton = document.getElementById("refresh");
+  let savedProducts = new Map();
 
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, (character) => ({
@@ -97,12 +98,13 @@
   }
 
   function productCard(product) {
-    return `<a class="card" href="/products/${encodeURIComponent(product.id)}">${imageMarkup(product)}<div class="card-content"><span class="category">${escapeHtml(product.category)}</span><h2>${escapeHtml(product.name)}</h2><p class="price">${escapeHtml(formatPrice(product.price))}</p>${staleLabel(product.savedAt)}</div></a>`;
+    return `<article class="card"><a class="product-link" href="/products/${encodeURIComponent(product.id)}">${imageMarkup(product)}<div class="card-content"><span class="category">${escapeHtml(product.category)}</span><h2>${escapeHtml(product.name)}</h2><p class="price">${escapeHtml(formatPrice(product.price))}</p>${staleLabel(product.savedAt)}</div></a><button class="add-button" type="button" data-add-product="${product.id}">Add to guest cart</button></article>`;
   }
 
   function renderProduct(product) {
     title.textContent = product.name;
-    catalog.innerHTML = `<article class="detail">${imageMarkup(product)}<div class="detail-content"><span class="category">${escapeHtml(product.category)}</span><h2>${escapeHtml(product.name)}</h2><p class="price">${escapeHtml(formatPrice(product.price))}</p><p>${escapeHtml(product.description)}</p><p>${product.stock > 0 ? `${escapeHtml(product.stock)} shown in stock when saved` : "Shown as out of stock when saved"}</p>${staleLabel(product.savedAt)}<a class="button secondary" href="/products">Back to catalogue</a></div></article>`;
+    savedProducts = new Map([[product.id, product]]);
+    catalog.innerHTML = `<article class="detail">${imageMarkup(product)}<div class="detail-content"><span class="category">${escapeHtml(product.category)}</span><h2>${escapeHtml(product.name)}</h2><p class="price">${escapeHtml(formatPrice(product.price))}</p><p>${escapeHtml(product.description)}</p><p>${product.stock > 0 ? `${escapeHtml(product.stock)} shown in stock when saved` : "Shown as out of stock when saved"}</p>${staleLabel(product.savedAt)}<button class="add-button" type="button" data-add-product="${product.id}">Add to guest cart</button><a class="button secondary" href="/products">Back to catalogue</a></div></article>`;
   }
 
   function renderListing(products, listing) {
@@ -112,6 +114,7 @@
       .map((id) => byId.get(id))
       .filter((product) => product && Date.now() - product.savedAt <= maxAge);
     if (!visible.length) return false;
+    savedProducts = new Map(visible.map((product) => [product.id, product]));
     catalog.innerHTML = `<div class="grid">${visible.map(productCard).join("")}</div><p class="saved-time">This saved catalogue view may be incomplete or out of date. No live stock check is available offline.</p>`;
     return true;
   }
@@ -130,6 +133,12 @@
       .slice(0, 12)
       .map(productCard)
       .join("");
+    savedProducts = new Map(
+      products
+        .filter((product) => Date.now() - product.savedAt <= maxAge)
+        .slice(0, 12)
+        .map((product) => [product.id, product]),
+    );
     catalog.innerHTML = `<div class="empty"><h2>This page has not been saved on this device.</h2><p>Visit this catalogue page while online to make its public product details available offline.</p><div class="actions">${links}</div></div>${productLinks ? `<div class="grid">${productLinks}</div>` : ""}`;
   }
 
@@ -164,6 +173,28 @@
     if (navigator.onLine) window.location.reload();
     else {
       notice.textContent = "Reconnect to the internet before refreshing live catalogue information.";
+    }
+  });
+  catalog.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-add-product]");
+    if (!button) return;
+    const product = savedProducts.get(Number(button.dataset.addProduct));
+    if (!product) return;
+
+    try {
+      await window.ShoppingPlaceGuestCart.add(
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          stock: product.stock,
+        },
+        1,
+      );
+      notice.textContent = `${product.name} was saved to this device only. Prices and stock are estimates; reconnect to reconcile.`;
+    } catch (error) {
+      notice.textContent = error.message || "The guest cart could not be saved.";
     }
   });
   window.addEventListener("online", updateConnectionStatus);

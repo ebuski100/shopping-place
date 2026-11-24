@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#16a34a" />
+    <title>Offline guest cart | Shopping Place</title>
+    <style>
+      :root { color-scheme: light dark; font-family: Arial, Helvetica, sans-serif; background: #f9fafb; color: #111827; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; padding: 24px; }
+      header, main { width: min(100%, 900px); margin: 0 auto; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .brand { display: inline-flex; align-items: center; gap: 10px; color: #15803d; font-size: 18px; font-weight: 700; text-decoration: none; }
+      .brand img { width: 36px; height: 36px; object-fit: contain; }
+      .status, .warning { border-radius: 999px; background: #fef3c7; color: #92400e; padding: 6px 11px; font-size: 12px; font-weight: 700; }
+      h1 { margin: 12px 0; font-size: clamp(26px, 6vw, 36px); }
+      .notice { margin: 16px 0; border: 1px solid #fcd34d; border-radius: 12px; background: #fffbeb; color: #78350f; padding: 14px 16px; font-size: 14px; line-height: 1.6; }
+      .items { display: grid; gap: 14px; margin: 22px 0; }
+      .item, .empty { border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; padding: 16px; }
+      .item { display: grid; grid-template-columns: 90px 1fr auto; gap: 16px; align-items: center; }
+      .item img { width: 90px; height: 90px; border-radius: 10px; background: #f3f4f6; object-fit: cover; }
+      .item h2 { margin: 0 0 6px; font-size: 17px; }
+      .muted { color: #6b7280; font-size: 13px; }
+      .price { font-weight: 700; }
+      .controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+      button, .button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border: 1px solid #d1d5db; border-radius: 10px; padding: 0 14px; background: #fff; color: inherit; cursor: pointer; font: inherit; font-weight: 600; text-decoration: none; }
+      .controls button { width: 38px; padding: 0; }
+      .remove { color: #b91c1c; }
+      .summary { display: flex; justify-content: space-between; border-top: 1px solid #e5e7eb; padding: 18px 2px; font-size: 18px; font-weight: 700; }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+      .primary { border-color: #16a34a; background: #16a34a; color: #fff; }
+      button:disabled { cursor: not-allowed; opacity: .55; }
+      button:focus-visible, a:focus-visible { outline: 3px solid #86efac; outline-offset: 3px; }
+      html.dark { background: #030712; color: #f9fafb; }
+      html.dark .item, html.dark .empty { border-color: #1f2937; background: #111827; }
+      html.dark .notice { border-color: #854d0e; background: #451a03; color: #fef3c7; }
+      html.dark .muted { color: #d1d5db; }
+      html.dark .summary { border-color: #374151; }
+      html.dark button, html.dark .button { border-color: #374151; background: #111827; color: #f9fafb; }
+      html.dark .primary { border-color: #15803d; background: #15803d; }
+      @media (prefers-color-scheme: dark) {
+        html:not(.light) { background: #030712; color: #f9fafb; }
+        html:not(.light) .item, html:not(.light) .empty { border-color: #1f2937; background: #111827; }
+        html:not(.light) .notice { border-color: #854d0e; background: #451a03; color: #fef3c7; }
+      }
+      @media (max-width: 560px) {
+        body { padding: 16px; }
+        header { align-items: flex-start; flex-direction: column; }
+        .item { grid-template-columns: 64px 1fr; gap: 12px; padding: 12px; }
+        .item img { width: 64px; height: 64px; }
+        .item-side { grid-column: 2; display: flex; align-items: center; justify-content: space-between; }
+      }
+    </style>
+    <script>
+      try {
+        const savedTheme = localStorage.getItem("theme");
+        const dark = savedTheme === "dark" || (savedTheme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.classList.toggle("light", savedTheme === "light");
+      } catch {}
+    </script>
+    <script src="/offline-guest-cart.js" defer></script>
+    <script src="/offline-cart.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/"><img src="/shopping-bag.png" width="36" height="36" alt="" /><span>Shopping Place</span></a>
+      <span class="status" id="connection-status">Offline guest cart</span>
+    </header>
+    <main>
+      <h1>Your Cart</h1>
+      <div class="notice" role="status" id="notice">This offline view contains only guest items saved on this device. Prices and stock are estimates and may change. Your server cart, checkout, orders, and payments require an internet connection.</div>
+      <section id="cart-items" class="items" aria-live="polite"></section>
+      <div id="cart-summary"></div>
+      <div class="actions">
+        <a class="button" href="/products">Continue shopping</a>
+      <button class="primary" id="reconnect" type="button">Checkout requires internet</button>
+      </div>
+    </main>
+  </body>
+</html>

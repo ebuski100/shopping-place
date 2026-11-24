@@ -35,7 +35,12 @@ export default function PublicCatalogSnapshot({
       const url = new URL(anchor.href);
       if (url.origin !== window.location.origin) return;
       const path = url.pathname.replace(/\/+$/, "") || "/";
-      if (path !== "/" && path !== "/products" && !/^\/products\/\d+$/.test(path)) {
+      if (
+        path !== "/" &&
+        path !== "/products" &&
+        path !== "/cart" &&
+        !/^\/products\/\d+$/.test(path)
+      ) {
         return;
       }
 

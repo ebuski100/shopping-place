@@ -36,7 +36,14 @@ export default function AddToCartButton({
     setLoading(true);
 
     try {
-      await addProductToCart(product, quantity);
+      const result = await addProductToCart(product, quantity);
+
+      if (!result.authenticated && result.offline) {
+        toast.warning(
+          `${product.name} saved on this device. Price and stock are estimates until you reconnect.`,
+        );
+        return;
+      }
 
       toast.success(
         quantity > 1

@@ -4,8 +4,9 @@ import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { mergeGuestCart } from "@/lib/guestCart";
+import { getGuestCartMergeNotice, mergeGuestCart } from "@/lib/guestCart";
 import GoBack from "@/components/GoBack";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -60,9 +61,14 @@ export default function LoginPage() {
       }
 
       try {
-        await mergeGuestCart();
+        const outcomes = await mergeGuestCart();
+        const notice = getGuestCartMergeNotice(outcomes);
+        if (notice) toast.warning(notice);
       } catch (error) {
         console.error("Guest cart merge failed:", error);
+        toast.warning(
+          "Your saved cart remains on this device. Reconciliation will be retried safely.",
+        );
       }
 
       router.push("/");

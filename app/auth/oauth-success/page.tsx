@@ -3,7 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { mergeGuestCart } from "@/lib/guestCart";
+import {
+  getGuestCartMergeNotice,
+  mergeGuestCart,
+} from "@/lib/guestCart";
+import { toast } from "sonner";
 
 export default function OAuthSuccessPage() {
   const router = useRouter();
@@ -11,9 +15,14 @@ export default function OAuthSuccessPage() {
   useEffect(() => {
     async function finishLogin() {
       try {
-        await mergeGuestCart();
+        const outcomes = await mergeGuestCart();
+        const notice = getGuestCartMergeNotice(outcomes);
+        if (notice) toast.warning(notice);
       } catch (error) {
         console.error("Guest cart merge failed:", error);
+        toast.warning(
+          "Your saved cart remains on this device. Reconciliation will be retried safely.",
+        );
       } finally {
         router.replace("/");
         router.refresh();

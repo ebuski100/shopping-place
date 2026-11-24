@@ -18,6 +18,8 @@
       .notice { color: #4b5563; line-height: 1.6; }
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; margin: 24px 0; }
       .card, .detail, .empty { overflow: hidden; border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; color: inherit; text-decoration: none; }
+      .product-link { display: block; color: inherit; text-decoration: none; }
+      .add-button { width: calc(100% - 28px); margin: 0 14px 14px; border: 0; background: #16a34a; color: #fff; }
       .card img, .detail img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #f3f4f6; }
       .card-content, .detail-content, .empty { padding: 18px; }
       .card h2, .detail h2 { margin: 9px 0; font-size: 17px; }
@@ -32,6 +34,7 @@
       html.dark .notice, html.dark .category, html.dark .saved-time { color: #d1d5db; }
       html.dark .card, html.dark .detail, html.dark .empty { border-color: #1f2937; background: #111827; }
       html.dark .button.secondary { border-color: #374151; }
+      html.dark .add-button { border-color: #15803d; background: #15803d; color: #fff; }
       @media (prefers-color-scheme: dark) {
         html:not(.light) { background: #030712; color: #f9fafb; }
         html:not(.light) .notice, html:not(.light) .category, html:not(.light) .saved-time { color: #d1d5db; }
@@ -47,12 +50,14 @@
         document.documentElement.classList.toggle("light", savedTheme === "light");
       } catch {}
     </script>
+    <script src="/offline-guest-cart.js" defer></script>
     <script src="/offline-catalog.js" defer></script>
   </head>
   <body>
     <header>
       <a class="brand" href="/"><img src="/shopping-bag.png" width="36" height="36" alt="" /><span>Shopping Place</span></a>
       <span class="status" id="connection-status">Saved catalogue</span>
+      <a class="button secondary" href="/cart">View Cart</a>
     </header>
     <main>
       <h1 id="page-title">Saved products</h1>

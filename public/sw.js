@@ -1,13 +1,17 @@
 "use strict";
 
 const CACHE_PREFIX = "shopping-place-static-";
-const CACHE_NAME = `${CACHE_PREFIX}v2`;
+const CACHE_NAME = `${CACHE_PREFIX}v3`;
 const OFFLINE_PAGE = "/offline.html";
 const OFFLINE_CATALOG_PAGE = "/offline-catalog.html";
+const OFFLINE_CART_PAGE = "/offline-cart.html";
 const PRECACHE_URLS = [
   OFFLINE_PAGE,
   OFFLINE_CATALOG_PAGE,
   "/offline-catalog.js",
+  OFFLINE_CART_PAGE,
+  "/offline-cart.js",
+  "/offline-guest-cart.js",
   "/shopping-bag.png",
   "/icons/shopping-place-192.png",
   "/icons/shopping-place-512.png",
@@ -90,11 +94,26 @@ async function offlineCatalogFallback() {
   return offlineFallback();
 }
 
-async function networkNavigation(request, isCatalogRoute) {
+async function offlineCartFallback() {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const fallback = await cache.match(OFFLINE_CART_PAGE);
+
+    if (fallback) return fallback;
+  } catch {
+    // Use the generic fallback if the guest-cart shell is unavailable.
+  }
+
+  return offlineFallback();
+}
+
+async function networkNavigation(request, fallbackType) {
   try {
     return await fetch(request);
   } catch {
-    return isCatalogRoute ? offlineCatalogFallback() : offlineFallback();
+    if (fallbackType === "catalog") return offlineCatalogFallback();
+    if (fallbackType === "cart") return offlineCartFallback();
+    return offlineFallback();
   }
 }
 
@@ -165,7 +184,9 @@ self.addEventListener("fetch", (event) => {
   // routes even when query strings, casing or trailing slashes vary.
   if (isNetworkOnlyPath(pathname)) {
     if (request.mode === "navigate") {
-      event.respondWith(networkNavigation(request, false));
+      event.respondWith(
+        networkNavigation(request, pathname === "/cart" ? "cart" : null),
+      );
     }
 
     return;
@@ -173,7 +194,12 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     // Never cache successful HTML or Next.js/RSC responses.
-    event.respondWith(networkNavigation(request, isPublicCatalogPath(pathname)));
+    event.respondWith(
+      networkNavigation(
+        request,
+        isPublicCatalogPath(pathname) ? "catalog" : null,
+      ),
+    );
     return;
   }
 

@@ -80,6 +80,7 @@ model User {
 reviews   Review[]
 
   cart      Cart?
+  cartMergeReceipts CartMergeReceipt[]
   accounts  Account[]
   sessions  Session[]
   orders    Order[]
@@ -90,6 +91,20 @@ notifications Notification[]
   orderNotifications      Boolean @default(true)
   deliveryNotifications   Boolean @default(true)
   promotionalNotifications Boolean @default(true)
+}
+
+model CartMergeReceipt {
+  id          String   @id @default(cuid())
+  userId      Int
+  mergeId     String
+  payloadHash String
+  result      Json
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mergeId])
+  @@index([userId, createdAt])
 }
 
 

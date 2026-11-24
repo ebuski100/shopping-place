@@ -28,7 +28,14 @@ export default function AddToCartIcon({ product }: AddToCartIconProps) {
     setIsAnimating(true);
 
     try {
-      await addProductToCart(product, 1);
+      const result = await addProductToCart(product, 1);
+
+      if (!result.authenticated && result.offline) {
+        toast.warning(
+          `${product.name} saved on this device. Price and stock are estimates until you reconnect.`,
+        );
+        return;
+      }
 
       toast.success(`${product.name} added to cart`);
     } catch (error) {
