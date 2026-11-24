@@ -25,6 +25,7 @@ interface DeferredInstallPrompt extends Event {
 type PwaInstallContextValue = {
   canInstall: boolean;
   isPrompting: boolean;
+  isStandalone: boolean;
   supportsIOSSafariInstructions: boolean;
   showInstallExperience: () => void;
   installApp: () => Promise<void>;
@@ -188,6 +189,7 @@ export function PwaInstallProvider({
       value={{
         canInstall,
         isPrompting,
+        isStandalone: standaloneAtLaunch,
         supportsIOSSafariInstructions,
         showInstallExperience,
         installApp,
@@ -199,6 +201,10 @@ export function PwaInstallProvider({
       <IOSInstallInstructions />
     </PwaInstallContext.Provider>
   );
+}
+
+export function usePwaStandaloneMode() {
+  return useContext(PwaInstallContext)?.isStandalone ?? false;
 }
 
 function IOSInstallInstructions() {

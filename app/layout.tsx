@@ -6,6 +6,7 @@ import WishlistInitializer from "@/components/WishlistInitializer";
 import ThemeInitializer from "@/components/ThemeInitializer";
 import ProductRatingsLoader from "@/components/products/ProductRatingsLoader";
 import { PwaInstallProvider } from "@/components/PwaInstall";
+import { AppNavigationProvider } from "@/components/AppNavigation";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import type { ReactNode } from "react";
 export const metadata: Metadata = {
@@ -50,7 +51,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         <ServiceWorkerRegistration />
 
-        <PwaInstallProvider>{children}</PwaInstallProvider>
+        <PwaInstallProvider>
+          <AppNavigationProvider>{children}</AppNavigationProvider>
+        </PwaInstallProvider>
 
         <Toaster position="bottom-left" richColors closeButton />
       </body>
